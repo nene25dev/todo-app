@@ -1,0 +1,104 @@
+/* 共通CSS */
+:root {
+    color-scheme: light dark;
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: "Kosugi", sans-serif;
+    background: #f5f7fb;
+    color: #333;
+    font-size: calc(15rem/16);
+    line-height: 1.5;
+    letter-spacing: .05em;
+}
+
+main {
+    margin: 0 auto;
+}
+
+@media (min-width:calc(640rem/16)) {
+    main {
+        padding: 0 24px;
+    }
+}
+
+button {
+    cursor: pointer;
+}
+
+input[type="text"] {
+    font: inherit;
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.card {
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 10px;
+}
+
+.row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.tabs button {
+    padding: 6px 10px;
+    border: 1px solid #ccc;
+    background: #fff;
+    border-radius: 999px;
+}
+
+.tabs button[aria-selected="true"] {
+    background: #111;
+    color: #fff;
+}
+
+.kbd {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    background: #f4f4f4;
+    border: 1px solid #ddd;
+    padding: 0 6px;
+    border-radius: 6px;
+}
+
+footer {
+    margin-top: 16px;
+    color: #666;
+    font-size: 12px;
+}
+
+.visually-hidden {
+    position: fixed !important;
+    /* keep it on viewport */
+    top: 0px !important;
+    left: 0px !important;
+    /* give it non-zero size, VoiceOver on Safari requires at least 2 pixels
+     before allowing buttons to be activated. */
+    width: 4px !important;
+    height: 4px !important;
+    /* visually hide it with overflow and opacity */
+    opacity: 0 !important;
+    overflow: hidden !important;
+    /* remove any margin or padding */
+    border: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    /* ensure no other style sets display to none */
+    display: block !important;
+    visibility: visible !important;
+}

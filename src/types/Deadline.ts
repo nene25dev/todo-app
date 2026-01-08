@@ -1,0 +1,1 @@
+export type Deadline = 'idea' | 'today' | 'tomorrow';
