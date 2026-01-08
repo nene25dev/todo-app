@@ -304,15 +304,6 @@ const App = () => {
   };
 
 
-  // 日付動作テスト
-  const handleTestRollover = () => {
-    localStorage.setItem("dayKey_lastChecked", "2000-01-01");
-
-    setTodos((prev) => rolloverTodosIfNewDay(prev));
-  };
-
-
-
   // データを取得
   useEffect(() => {
     localforage

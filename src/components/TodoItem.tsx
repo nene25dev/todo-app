@@ -16,9 +16,6 @@ type Props = {
 
 export const TodoItem = ({ todo, setDraggingId, onChange, varidateForm, onDropOnItem }: Props) => {
 
-    // チェックボックスのid
-    const checkboxId = `todo-check-${todo.id}`;
-
     // 編集用の値
     const [editText, seteditText] = useState(todo.value);
     const [editTime, seteditTime] = useState(String(todo.time));
