@@ -263,11 +263,17 @@ input[type="checkbox"]+span {
     height: 100%;
     content: "";
     opacity: 0;
-    mask-image: url("src/assets/img/icon.svg");
+    mask-image: url("./assets/img/icon.svg");
     mask-repeat: no-repeat;
     mask-size: contain;
     background-color: #FFFFFF;
     transition: opacity 0.2s;
+
+    /* Safari対策 */
+    -webkit-mask-image: url("./assets/img/icon.svg");
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    -webkit-mask-size: contain;
   }
 
   /* 強制カラーモードが有効のときは、既定のシステムカラー値を設定して、トランジションを無効にする */
