@@ -184,6 +184,9 @@ const App = () => {
 
   // todoをドラッグで並び替える
   const handleDropOnItem = (dragId: number, targetDeadline: Deadline, targetId?: number) => {
+
+    let overd = false;
+
     setTodos((prev) => {
       const next = [...prev];
 
@@ -196,14 +199,14 @@ const App = () => {
       // ドロップ先が「今日やる」の場合
       // 上限チェック
       if (targetDeadline === "today") {
-        const todayCount = todos.filter(
+        const todayCount = prev.filter(
           (todo) =>
             todo.deadline === 'today' &&
             !todo.removed &&
-            todo.id !== draggingId // ドラッグ中のデータは除外
+            todo.id !== dragId // ドラッグ中のデータは除外
         ).length;
         if (todayCount >= 3) {
-          alert("今日は既にやることがいっぱいです！💦");
+          overd = true;
           return prev;
         }
       }
@@ -235,6 +238,10 @@ const App = () => {
 
       return next;
     });
+
+    if (overd) {
+      alert("今日は既にやることがいっぱいです！💦");
+    }
   };
 
 
