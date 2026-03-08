@@ -9,7 +9,7 @@ import type {
   Deadline,
   Section,
 } from "../../shared/types/";
-import { fetchTodos,createTodo,updateTodo } from "./api/todo";
+import { fetchTodos,createTodo,updateTodo,deleteTodo } from "./api/todo";
 
 const App = () => {
   const [text, setText] = useState("");
@@ -127,9 +127,16 @@ const App = () => {
 };
 
   // 「ごみ箱」を空にする
-  const handleEmpty = () => {
+const handleEmpty = async () => {
+  const removedTodos = todos.filter((todo) => todo.removed);
+  try {
+    await Promise.all(removedTodos.map((todo) => deleteTodo(todo.id)));
     setTodos((todos) => todos.filter((todo) => !todo.removed));
-  };
+  } catch (error) {
+    console.error(error);
+    alert("Todoの削除に失敗しました");
+  }
+};
 
   // 「完了したタスク」をまとめて「ごみ箱」に移動する
   const handleMoveRemove = () => {

@@ -4,12 +4,13 @@ const API_URL = import.meta.env.VITE_API_URL;
 
 // 読み込み
 // fetch 非同期処理 APIを呼ぶ
-export const fetchTodos = async ():Promise<Todo[]> => {
+export const fetchTodos = async (): Promise<Todo[]> => {
   // fetch 非同期処理 APIを呼ぶ
   const res = await fetch(`${API_URL}/todos`);
 
   if (!res.ok) {
-    throw new Error("Todo取得失敗");
+    const errorData = await res.json().catch(() => null);
+    throw new Error(errorData?.message || "Todo取得失敗");
   }
 
   // サーバーから来たjsonをjavascriptオブジェクトに変換
@@ -31,7 +32,8 @@ export const createTodo = async (todo: {
   });
 
   if (!res.ok) {
-    throw new Error("Todo追加失敗");
+    const errorData = await res.json().catch(() => null);
+    throw new Error(errorData?.message || "Todo追加失敗");
   }
 
   return res.json();
@@ -40,7 +42,9 @@ export const createTodo = async (todo: {
 // 更新
 export const updateTodo = async (
   id: number,
-  updates: Partial<Pick<Todo, "value" | "deadline" | "time" | "checked" | "removed">>,
+  updates: Partial<
+    Pick<Todo, "value" | "deadline" | "time" | "checked" | "removed">
+  >,
 ): Promise<Todo> => {
   const res = await fetch(`${API_URL}/todos/${id}`, {
     method: "PATCH",
@@ -56,4 +60,16 @@ export const updateTodo = async (
   }
 
   return res.json();
+};
+
+// 削除
+export const deleteTodo = async (id: number): Promise<void> => {
+  const res = await fetch(`${API_URL}/todos/${id}`, {
+    method: "DELETE",
+  });
+
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => null);
+    throw new Error(errorData?.message || "Todo削除失敗");
+  }
 };

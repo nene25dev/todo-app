@@ -86,7 +86,7 @@ app.post("/todos", (req, res) => {
     time: time,
   };
 
-  todos.push(newTodo);
+  todos.unshift(newTodo);
 
   res.status(201).json(newTodo);
 });
@@ -148,19 +148,19 @@ app.patch("/todos/:id", (req, res) => {
 });
 
 // Todo削除
-// app.delete("/todos/:id", (req, res) => {
-//   const id = Number(req.params.id);
+app.delete("/todos/:id", (req, res) => {
+  const id = Number(req.params.id);
 
-//   const exists = todos.some((todo) => todo.id === id);
+  const exists = todos.some((todo) => todo.id === id);
 
-//   if (!exists) {
-//     return res.status(404).json({ message: "todo not found" });
-//   }
+  if (!exists) {
+    return res.status(404).json({ message: "todo not found" });
+  }
 
-//   todos = todos.filter((todo) => todo.id !== id);
+  todos = todos.filter((todo) => todo.id !== id);
 
-//   res.status(204).send();
-// });
+  res.status(204).send();
+});
 
 app.listen(PORT, () => {
   console.log(`Server running: http://localhost:${PORT}`);
