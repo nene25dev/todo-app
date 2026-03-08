@@ -1,7 +1,7 @@
 import type {
     Errors,
     Deadline,
-} from "../types";
+} from "../../../shared/types/";
 
 type Props = {
     text: string

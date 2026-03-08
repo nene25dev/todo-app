@@ -4,7 +4,7 @@ import type {
     Errors,
     Section,
     Deadline
-} from "../types";
+} from "../../../shared/types/";
 
 type Props = {
     section: Section;

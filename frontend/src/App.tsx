@@ -1,27 +1,24 @@
-import localforage from 'localforage';
-import { useEffect, useState } from 'react';
-import { isTodos } from './lib/isTodo';
-import { Form } from './components/Form';
-import './App.css'
-import { TodoSection } from './components/TodoSection';
-import { mockTodos } from './data/mockTodos';
+import { useEffect, useState } from "react";
+import { Form } from "./components/Form";
+import "./App.css";
+import { TodoSection } from "./components/TodoSection";
 import type {
   Todo,
   Errors,
   Filter,
   Deadline,
-  Section
-} from "./types";
+  Section,
+} from "../../shared/types/";
+import { fetchTodos,createTodo,updateTodo } from "./api/todo";
 
 const App = () => {
-  const [text, setText] = useState('');
-  const [time, setTime] = useState('');
+  const [text, setText] = useState("");
+  const [time, setTime] = useState("");
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [filter, setFilter] = useState<Filter>('all');
-  const [deadline, setDeadline] = useState<Deadline>('idea');
+  const [filter, setFilter] = useState<Filter>("all");
+  const [deadline, setDeadline] = useState<Deadline>("idea");
   const [errors, setErrors] = useState<Errors>({});
   const [draggingId, setDraggingId] = useState<number | null>(null);
-
 
   // バリデーション関数
   const varidateText = (text: string) => {
@@ -30,7 +27,7 @@ const App = () => {
       return "文字を入力してください。";
     }
     return "";
-  }
+  };
   const varidateTime = (time: string | number) => {
     const num = Number(time);
     // かかる時間 が空もしくは30より大きい場合
@@ -40,14 +37,14 @@ const App = () => {
       return "30分以内の値で入力してください。";
     }
     return "";
-  }
+  };
 
   const varidateForm = (values: { text: string; time: string | number }) => {
     return {
       text: varidateText(values.text),
       time: varidateTime(values.time),
     };
-  }
+  };
 
   // フォーカスアウトしたときのイベント
   const onBlur = (field: keyof Errors) => {
@@ -68,8 +65,7 @@ const App = () => {
     setTime(time);
   };
 
-
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     // バリデーション結果を受け取る
     const result = varidateForm({ text, time });
     // エラーを表示
@@ -82,27 +78,31 @@ const App = () => {
     const num = Number(time);
 
     // 「今日やる」追加上限を設定
-    if (deadline === 'today') {
+    if (deadline === "today") {
       const todayCount = todos.filter(
-        (todo) => todo.deadline === 'today' && !todo.removed
+        (todo) => todo.deadline === "today" && !todo.removed,
       ).length;
 
       if (todayCount >= 3) {
-        alert('今日は既にやることがいっぱいです！💦');
+        alert("今日は既にやることがいっぱいです！💦");
         return;
       }
     }
-    const newTodo: Todo = {
-      id: new Date().getTime(),
-      value: text,
-      checked: false,
-      removed: false,
-      deadline: deadline,
-      time: num,
-    };
 
-    setTodos((todos) => [newTodo, ...todos]);
-    setText('');
+    // try catch構文 エラーが発生する可能性があるコードを試して対処する
+    try {
+      const newTodo = await createTodo({
+      value: text,
+      deadline,
+      time: num,
+    });
+      setTodos((todos) => [newTodo, ...todos]);
+      setText("");
+    } catch (error) {
+      // エラー発生時の処理
+      console.error(error);
+      alert("通信エラーが発生しました");
+    }
   };
 
   const handleFilter = (filter: Filter) => {
@@ -113,13 +113,18 @@ const App = () => {
   };
 
   // 特定のタスクのプロパティを差し替え
-  const handleTodo = (id: number, updates: Partial<Todo>) => {
+  const handleTodo = async (id: number, updates: Partial<Todo>) => {
+  try {
+    const updatedTodo = await updateTodo(id, updates);
+
     setTodos((todos) =>
-      todos.map((todo) =>
-        todo.id === id ? { ...todo, ...updates } : todo
-      )
+      todos.map((todo) => (todo.id === id ? updatedTodo : todo)),
     );
-  };
+  } catch (error) {
+    console.error(error);
+    alert("Todoの更新に失敗しました");
+  }
+};
 
   // 「ごみ箱」を空にする
   const handleEmpty = () => {
@@ -130,43 +135,44 @@ const App = () => {
   const handleMoveRemove = () => {
     setTodos((prev) =>
       prev.map((todo) =>
-        todo.checked && !todo.removed
-          ? { ...todo, removed: true }
-          : todo
-      )
+        todo.checked && !todo.removed ? { ...todo, removed: true } : todo,
+      ),
     );
   };
 
   const filteredTodos = todos.filter((todo) => {
-    if (filter === 'removed') return todo.removed;
-    if (filter === 'checked') return todo.checked && !todo.removed;
+    if (filter === "removed") return todo.removed;
+    if (filter === "checked") return todo.checked && !todo.removed;
     return !todo.removed;
   });
 
   const filteredDeadline = (deadline: Deadline) => {
     return todos.filter((todo) => todo.deadline === deadline && !todo.removed);
-  }
+  };
 
   const DEFAULT_SECTIONS: Section[] = [
-    { id: 'idea', deadline: 'idea', title: '思いつき' },
+    { id: "idea", deadline: "idea", title: "思いつき" },
     {
-      id: 'today',
-      deadline: 'today',
-      title: '今日やる',
+      id: "today",
+      deadline: "today",
+      title: "今日やる",
       note: (
         <>
-          <p className="text">明日まで残り： <Countdown /></p>
+          <p className="text">
+            明日まで残り： <Countdown />
+          </p>
           <p className="text">※3件まで</p>
         </>
       ),
     },
-    { id: 'tomorrow', deadline: 'tomorrow', title: '明日やる' },
+    { id: "tomorrow", deadline: "tomorrow", title: "明日やる" },
   ];
 
-
   const SECTIONS_BY_FILTER: Partial<Record<Filter, Section[]>> = {
-    removed: [{ id: 'removed', title: 'ごみ箱', icon: 'fa-solid fa-trash' }],
-    checked: [{ id: 'checked', title: '完了したタスク', icon: 'fa-solid fa-trophy' }],
+    removed: [{ id: "removed", title: "ごみ箱", icon: "fa-solid fa-trash" }],
+    checked: [
+      { id: "checked", title: "完了したタスク", icon: "fa-solid fa-trophy" },
+    ],
   };
 
   const sections: Section[] = SECTIONS_BY_FILTER[filter] ?? DEFAULT_SECTIONS;
@@ -175,16 +181,19 @@ const App = () => {
     if (section.deadline) {
       return filteredDeadline(section.deadline);
     }
-    if (section.id === 'removed' || section.id === 'checked') {
+    if (section.id === "removed" || section.id === "checked") {
       return filteredTodos;
     }
 
     return [];
-  }
+  };
 
   // todoをドラッグで並び替える
-  const handleDropOnItem = (dragId: number, targetDeadline: Deadline, targetId?: number) => {
-
+  const handleDropOnItem = (
+    dragId: number,
+    targetDeadline: Deadline,
+    targetId?: number,
+  ) => {
     let overd = false;
 
     setTodos((prev) => {
@@ -201,9 +210,7 @@ const App = () => {
       if (targetDeadline === "today") {
         const todayCount = prev.filter(
           (todo) =>
-            todo.deadline === 'today' &&
-            !todo.removed &&
-            todo.id !== dragId // ドラッグ中のデータは除外
+            todo.deadline === "today" && !todo.removed && todo.id !== dragId, // ドラッグ中のデータは除外
         ).length;
         if (todayCount >= 3) {
           overd = true;
@@ -214,7 +221,6 @@ const App = () => {
       // ドラッグ対象のデータを削除
       const [moved] = next.splice(from, 1);
       const moved2 = { ...moved, deadline: targetDeadline };
-
 
       // 挿入先 index を決める
       let to: number;
@@ -243,7 +249,6 @@ const App = () => {
       alert("今日は既にやることがいっぱいです！💦");
     }
   };
-
 
   // カウントダウン
   function Countdown() {
@@ -295,13 +300,14 @@ const App = () => {
     }
 
     // 今日やるの件数を数える
-    const todayCount = todos.filter((todo) => todo.deadline === "today" && !todo.removed).length;
-
+    const todayCount = todos.filter(
+      (todo) => todo.deadline === "today" && !todo.removed,
+    ).length;
 
     // 日付が変わった：tomorrow -> today
     const next: Todo[] = todos.map((todo) => {
       if (todo.deadline === "tomorrow" && todayCount < 3) {
-        return { ...todo, deadline: "today" as Todo["deadline"] }
+        return { ...todo, deadline: "today" as Todo["deadline"] };
       }
       return todo;
     });
@@ -310,26 +316,21 @@ const App = () => {
     return next;
   };
 
-
-  // データを取得
+  // 初回表示時にTodoを取得
   useEffect(() => {
-    localforage
-      .getItem('todo-app')
-      // value: 保存されている値
-      .then((values) => {
-        if (isTodos(values)) {
-          // 保存されているタスクを読み込む
-          // そのまま「明日やる → 今日やる」に変換
-          const rolled = rolloverTodosIfNewDay(values);
-          setTodos(rolled);
-        }
-      });
-  }, [])
-
-  // データ (=value) を保存
-  useEffect(() => {
-    localforage.setItem('todo-app', todos);
-  }, [todos]);
+    // async(関数が非同期処理を行うことを宣言)
+    const load = async () => {
+      try {
+        const data = (await fetchTodos()) as Todo[];
+        // 「明日やる → 今日やる」に変換
+        const rolled = rolloverTodosIfNewDay(data);
+        setTodos(rolled);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    load();
+  }, []);
 
   // アプリを開いてる間に「明日やる → 今日やる」に変換
   useEffect(() => {
@@ -340,26 +341,13 @@ const App = () => {
     return () => clearInterval(timer); // アンマウント時に止める
   }, []);
 
-  // 初期化時のみテストデータ追加
-  useEffect(() => {
-    const init = async () => {
-      const saved = await localforage.getItem<Todo[]>('todos');
-      if (!saved || saved.length === 0) {
-        setTodos(mockTodos);
-        await localforage.setItem('todos', mockTodos);
-      }
-    };
-    init();
-  }, []);
-
-
-
   return (
     <div className="app">
-      <div className='app-header'>
+      <div className="app-header">
         <h1 className="app-title">タスク管理アプリ</h1>
-        <div className='toolbar'>
-          <select name='filter'
+        <div className="toolbar">
+          <select
+            name="filter"
             className="filter-select"
             defaultValue="all"
             onChange={(e) => handleFilter(e.target.value as Filter)}
@@ -369,17 +357,17 @@ const App = () => {
             <option value="removed">ごみ箱</option>
           </select>
 
-          {filter === 'removed' ? (
+          {filter === "removed" ? (
             <button
-              className='removed-button'
+              className="removed-button"
               onClick={handleEmpty}
               disabled={todos.filter((todo) => todo.removed).length === 0}
             >
               ごみ箱を空にする
             </button>
-          ) : filter === 'checked' ? (
+          ) : filter === "checked" ? (
             <button
-              className='checked-button'
+              className="checked-button"
               onClick={handleMoveRemove}
               disabled={todos.filter((todo) => todo.checked).length === 0}
             >
@@ -400,7 +388,7 @@ const App = () => {
         </div>
       </div>
 
-      <main className='board'>
+      <main className="board">
         {sections.map((section) => (
           <TodoSection
             key={section.id}
@@ -413,10 +401,9 @@ const App = () => {
             onDropItem={handleDropOnItem}
           />
         ))}
-
       </main>
     </div>
   );
 };
 
-export default App
+export default App;

@@ -1,7 +1,7 @@
 import type {
   Todo,
   Deadline,
-} from "../types";
+} from "../../../shared/types/";
 
 const isDeadline = (value: any): value is Deadline => {
   return value === 'idea' || value === 'today' || value === 'tomorrow';

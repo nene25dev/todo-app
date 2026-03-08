@@ -2,7 +2,7 @@ import { useState } from "react";
 import type {
     Todo,
     Errors,
-} from "../types";
+} from "../../../shared/types/";
 
 
 // 親から渡される値
