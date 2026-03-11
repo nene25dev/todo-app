@@ -24,10 +24,13 @@ export const createTodo = async (todo: {
   time: number;
 }) => {
   const res = await fetch(`${API_URL}/todos`, {
+    // リクエストメソッド：リクエストが成功した場合に期待される結果
     method: "POST",
+    // リクエスト本体の形式
     headers: {
       "Content-Type": "application/json",
     },
+    // サーバーに送信する内容
     body: JSON.stringify(todo),
   });
 
