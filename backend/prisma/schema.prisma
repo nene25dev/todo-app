@@ -21,6 +21,6 @@ model Todo {
   value    String
   checked  Boolean @default(false)
   removed  Boolean @default(false)
-  deadline Deadline
+  deadline Deadline @default(idea)
   time     Int
 }
