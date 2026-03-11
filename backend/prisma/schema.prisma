@@ -9,3 +9,18 @@ generator client {
 datasource db {
   provider = "sqlite"
 }
+
+enum Deadline {
+  today
+  tomorrow
+  idea
+}
+
+model Todo {
+  id       Int     @id @default(autoincrement())
+  value    String
+  checked  Boolean @default(false)
+  removed  Boolean @default(false)
+  deadline Deadline
+  time     Int
+}
