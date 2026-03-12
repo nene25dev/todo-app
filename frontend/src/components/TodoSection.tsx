@@ -5,6 +5,7 @@ import type {
     Section,
     Deadline
 } from "../../../shared/types/";
+import { memo } from "react";
 
 type Props = {
     section: Section;

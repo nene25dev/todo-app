@@ -11,6 +11,58 @@ import type {
 } from "../../shared/types/";
 import { fetchTodos,createTodo,updateTodo,deleteTodo } from "./api/todo";
 
+  // カウントダウン
+  function Countdown() {
+    const [countdown, setCountdown] = useState("");
+
+    useEffect(() => {
+      const update = () => {
+        const now = new Date();
+        const tomorrow = new Date();
+        tomorrow.setDate(now.getDate() + 1);
+        tomorrow.setHours(0, 0, 0, 0);
+
+        const diff = tomorrow.getTime() - now.getTime();
+
+        const hours = Math.floor(diff / (1000 * 60 * 60));
+        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+        setCountdown(`${hours}時間 ${minutes}分 ${seconds}秒`);
+      };
+
+      update(); // 初回実行
+      const timer = setInterval(update, 1000);
+
+      return () => clearInterval(timer);
+    }, []);
+
+    return <>{countdown}</>;
+  }
+
+  const TodayNote = () => {
+    return  (
+      <>
+          <p className="text">
+            明日まで残り： <Countdown />
+          </p>
+          <p className="text">※3件まで</p>
+        </>
+    );
+  }
+
+  // デフォルトのsection
+  const DEFAULT_SECTIONS: Section[] = [
+    { id: "idea", deadline: "idea", title: "思いつき" },
+    {
+      id: "today",
+      deadline: "today",
+      title: "今日やる",
+      note: <TodayNote />,
+    },
+    { id: "tomorrow", deadline: "tomorrow", title: "明日やる" },
+  ];
+
 const App = () => {
   const [text, setText] = useState("");
   const [time, setTime] = useState("");
@@ -157,24 +209,6 @@ const handleEmpty = async () => {
     return todos.filter((todo) => todo.deadline === deadline && !todo.removed);
   };
 
-  const DEFAULT_SECTIONS: Section[] = [
-    { id: "idea", deadline: "idea", title: "思いつき" },
-    {
-      id: "today",
-      deadline: "today",
-      title: "今日やる",
-      note: (
-        <>
-          <p className="text">
-            明日まで残り： <Countdown />
-          </p>
-          <p className="text">※3件まで</p>
-        </>
-      ),
-    },
-    { id: "tomorrow", deadline: "tomorrow", title: "明日やる" },
-  ];
-
   const SECTIONS_BY_FILTER: Partial<Record<Filter, Section[]>> = {
     removed: [{ id: "removed", title: "ごみ箱", icon: "fa-solid fa-trash" }],
     checked: [
@@ -256,35 +290,6 @@ const handleEmpty = async () => {
       alert("今日は既にやることがいっぱいです！💦");
     }
   };
-
-  // カウントダウン
-  function Countdown() {
-    const [countdown, setCountdown] = useState("");
-
-    useEffect(() => {
-      const update = () => {
-        const now = new Date();
-        const tomorrow = new Date();
-        tomorrow.setDate(now.getDate() + 1);
-        tomorrow.setHours(0, 0, 0, 0);
-
-        const diff = tomorrow.getTime() - now.getTime();
-
-        const hours = Math.floor(diff / (1000 * 60 * 60));
-        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-        const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-
-        setCountdown(`${hours}時間 ${minutes}分 ${seconds}秒`);
-      };
-
-      update(); // 初回実行
-      const timer = setInterval(update, 1000);
-
-      return () => clearInterval(timer);
-    }, []);
-
-    return <>{countdown}</>;
-  }
 
   // 現在時刻 (YYYY-MM-DD)を取得
   const DAY_KEY_STORAGE = "dayKey_lastChecked";
