@@ -10,7 +10,7 @@
 
 ## デモ
 
-[https://nene25dev-todo-app.netlify.app/](https://nene25dev-todo-app.netlify.app/)
+[https://todo-gtno5yp22-nene25devs-projects.vercel.app/](https://todo-gtno5yp22-nene25devs-projects.vercel.app/)
 
 ---
 
