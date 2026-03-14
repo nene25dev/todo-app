@@ -7,8 +7,10 @@ import type {
   Errors,
   Filter,
   Deadline,
-  Section,
 } from "../../shared/types/";
+import type {
+    Section
+} from "../types/index";
 import { fetchTodos, createTodo, updateTodo, deleteTodo } from "./api/todo";
 
 // 残り時間取得

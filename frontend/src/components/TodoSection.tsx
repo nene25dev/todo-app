@@ -2,10 +2,11 @@ import { TodoItem } from "./TodoItem";
 import type {
     Todo,
     Errors,
-    Section,
     Deadline
 } from "../../../shared/types/";
-import { memo } from "react";
+import type {
+    Section
+} from "../../types/index";
 
 type Props = {
     section: Section;

@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import type { Deadline } from "./Deadline";
+import type { Deadline } from "../../shared/types/"
 
 export type Section = {
     id: string;
