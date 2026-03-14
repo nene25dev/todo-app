@@ -1,19 +1,22 @@
 // HTTPリクエストを受けて、レスポンスを返す
 import type { Request, Response } from "express";
-import {
-  deleteTodo,
-  findTodoById,
-} from "../repositories/todoRepository.js";
-import { createNewTodo, getAllTodos, updatedTodo } from "../services/todoService.js";
+import { todoRepository } from "../repositories/todoRepository.js";
+import { todoService } from "../services/todoService.js";
 import { AppError } from "../errors/AppError.js";
+
+// TODO:仮固定、認証導入時に差し替え
+const userId = 1;
 
 // get
 export const getTodos = async (_req: Request, res: Response) => {
   try {
-    const todos = await getAllTodos();
+    const todos = await todoService.getAllTodos(userId);
     res.json(todos);
   } catch (error) {
     console.error(error);
+    if (error instanceof AppError) {
+      return res.status(error.statusCode).json({ message: error.message });
+    }
     res.status(500).json({ message: "Todo一覧の取得に失敗しました" });
   }
 };
@@ -21,12 +24,12 @@ export const getTodos = async (_req: Request, res: Response) => {
 // post
 export const postTodos = async (req: Request, res: Response) => {
   try {
-    const newTodo = await createNewTodo(req.body);
+    const newTodo = await todoService.createNewTodo(userId,req.body);
     res.status(201).json(newTodo);
   } catch (error) {
     console.error(error);
-    if (error instanceof Error && error.message === "VALIDATION_ERROR") {
-      return res.status(400).json({ message: "必須項目です" });
+    if (error instanceof AppError) {
+      return res.status(error.statusCode).json({ message: error.message });
     }
     res.status(500).json({ message: "Todo追加に失敗しました" });
   }
@@ -38,7 +41,7 @@ export const patchTodo = async (req: Request, res: Response) => {
     // urlからidを取り出す
     const id = Number(req.params.id);
     // 更新用データを元に、DBを更新
-    const todo = await updatedTodo(id, req.body);
+    const todo = await todoService.updatedTodo(id, req.body);
     // 更新されたデータを返す
     res.json(todo);
   } catch (error) {
@@ -59,17 +62,14 @@ export const removeTodo = async (req: Request, res: Response) => {
       return res.status(400).json({ message: "idが不正です" });
     }
 
-    const exists = await findTodoById(id);
-
-    if (!exists) {
-      return res.status(404).json({ message: "TODOが見つかりませんでした" });
-    }
-
-    await deleteTodo(id);
+    await todoService.deleteTodo(id);
 
     res.status(204).send();
   } catch (error) {
     console.error(error);
+    if (error instanceof AppError) {
+      return res.status(error.statusCode).json({ message: error.message });
+    }
     res.status(500).json({ message: "Todo削除に失敗しました" });
   }
 };

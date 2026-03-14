@@ -1,3 +1,4 @@
+// URLとcontrollerを結びつける
 import { Router } from "express";
 import { getTodos, patchTodo, postTodos, removeTodo } from "../controllers/todoController.js";
 

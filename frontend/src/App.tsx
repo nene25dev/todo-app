@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Form } from "./components/Form";
 import "./App.css";
 import { TodoSection } from "./components/TodoSection";
@@ -9,59 +9,67 @@ import type {
   Deadline,
   Section,
 } from "../../shared/types/";
-import { fetchTodos,createTodo,updateTodo,deleteTodo } from "./api/todo";
+import { fetchTodos, createTodo, updateTodo, deleteTodo } from "./api/todo";
 
-  // カウントダウン
-  function Countdown() {
-    const [countdown, setCountdown] = useState("");
+// 残り時間取得
+function getRemainingTime() {
+  const now = new Date();
+  const tomorrow = new Date();
+  tomorrow.setDate(now.getDate() + 1);
+  tomorrow.setHours(0, 0, 0, 0);
 
-    useEffect(() => {
-      const update = () => {
-        const now = new Date();
-        const tomorrow = new Date();
-        tomorrow.setDate(now.getDate() + 1);
-        tomorrow.setHours(0, 0, 0, 0);
+  const diff = tomorrow.getTime() - now.getTime();
+  return diff;
+}
+// 時間形式を整形
+function formatTime(diff: number) {
+  const hours = Math.floor(diff / (1000 * 60 * 60));
+  const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+  const seconds = Math.floor((diff % (1000 * 60)) / 1000);
 
-        const diff = tomorrow.getTime() - now.getTime();
+  return `${hours}時間 ${minutes}分 ${seconds}秒`;
+}
+// カウントダウン
+function Countdown() {
+  const [countdown, setCountdown] = useState("");
 
-        const hours = Math.floor(diff / (1000 * 60 * 60));
-        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-        const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+  useEffect(() => {
+    const update = () => {
+      let diff = getRemainingTime();
+      setCountdown(formatTime(diff));
+    };
 
-        setCountdown(`${hours}時間 ${minutes}分 ${seconds}秒`);
-      };
+    update();
+    let timer = setInterval(update, 1000);
+    // コンポーネントが消えるときタイマー停止
+    return () => clearInterval(timer);
+  }, []);
 
-      update(); // 初回実行
-      const timer = setInterval(update, 1000);
+  return countdown;
+}
 
-      return () => clearInterval(timer);
-    }, []);
+const TodayNote = () => {
+  return (
+    <>
+      <p className="text">
+        明日まで残り： <>{Countdown()}</>
+      </p>
+      <p className="text">※3件まで</p>
+    </>
+  );
+};
 
-    return <>{countdown}</>;
-  }
-
-  const TodayNote = () => {
-    return  (
-      <>
-          <p className="text">
-            明日まで残り： <Countdown />
-          </p>
-          <p className="text">※3件まで</p>
-        </>
-    );
-  }
-
-  // デフォルトのsection
-  const DEFAULT_SECTIONS: Section[] = [
-    { id: "idea", deadline: "idea", title: "思いつき" },
-    {
-      id: "today",
-      deadline: "today",
-      title: "今日やる",
-      note: <TodayNote />,
-    },
-    { id: "tomorrow", deadline: "tomorrow", title: "明日やる" },
-  ];
+// デフォルトのsection
+const DEFAULT_SECTIONS: Section[] = [
+  { id: "idea", deadline: "idea", title: "思いつき" },
+  {
+    id: "today",
+    deadline: "today",
+    title: "今日やる",
+    note: <TodayNote />,
+  },
+  { id: "tomorrow", deadline: "tomorrow", title: "明日やる" },
+];
 
 const App = () => {
   const [text, setText] = useState("");
@@ -144,10 +152,10 @@ const App = () => {
     // try catch構文 エラーが発生する可能性があるコードを試して対処する
     try {
       const newTodo = await createTodo({
-      value: text,
-      deadline,
-      time: num,
-    });
+        value: text,
+        deadline,
+        time: num,
+      });
       setTodos((todos) => [newTodo, ...todos]);
       setText("");
     } catch (error) {
@@ -166,29 +174,29 @@ const App = () => {
 
   // 特定のタスクのプロパティを差し替え
   const handleTodo = async (id: number, updates: Partial<Todo>) => {
-  try {
-    const updatedTodo = await updateTodo(id, updates);
+    try {
+      const updatedTodo = await updateTodo(id, updates);
 
-    setTodos((todos) =>
-      todos.map((todo) => (todo.id === id ? updatedTodo : todo)),
-    );
-  } catch (error) {
-    console.error(error);
-    alert("Todoの更新に失敗しました");
-  }
-};
+      setTodos((todos) =>
+        todos.map((todo) => (todo.id === id ? updatedTodo : todo)),
+      );
+    } catch (error) {
+      console.error(error);
+      alert("Todoの更新に失敗しました");
+    }
+  };
 
   // 「ごみ箱」を空にする
-const handleEmpty = async () => {
-  const removedTodos = todos.filter((todo) => todo.removed);
-  try {
-    await Promise.all(removedTodos.map((todo) => deleteTodo(todo.id)));
-    setTodos((todos) => todos.filter((todo) => !todo.removed));
-  } catch (error) {
-    console.error(error);
-    alert("Todoの削除に失敗しました");
-  }
-};
+  const handleEmpty = async () => {
+    const removedTodos = todos.filter((todo) => todo.removed);
+    try {
+      await Promise.all(removedTodos.map((todo) => deleteTodo(todo.id)));
+      setTodos((todos) => todos.filter((todo) => !todo.removed));
+    } catch (error) {
+      console.error(error);
+      alert("Todoの削除に失敗しました");
+    }
+  };
 
   // 「完了したタスク」をまとめて「ごみ箱」に移動する
   const handleMoveRemove = () => {
@@ -235,8 +243,6 @@ const handleEmpty = async () => {
     targetDeadline: Deadline,
     targetId?: number,
   ) => {
-    let overd = false;
-
     setTodos((prev) => {
       const next = [...prev];
 
@@ -254,7 +260,6 @@ const handleEmpty = async () => {
             todo.deadline === "today" && !todo.removed && todo.id !== dragId, // ドラッグ中のデータは除外
         ).length;
         if (todayCount >= 3) {
-          overd = true;
           return prev;
         }
       }
@@ -285,73 +290,36 @@ const handleEmpty = async () => {
 
       return next;
     });
+  };
 
-    if (overd) {
-      alert("今日は既にやることがいっぱいです！💦");
+  // async(関数が非同期処理を行うことを宣言)
+  const load = useCallback(async () => {
+    try {
+      const data = (await fetchTodos()) as Todo[];
+      setTodos(data);
+    } catch (error) {
+      console.error(error);
     }
-  };
+  }, []);
 
-  // 現在時刻 (YYYY-MM-DD)を取得
-  const DAY_KEY_STORAGE = "dayKey_lastChecked";
-  const getDayKey = (d = new Date()) => {
-    const y = d.getFullYear();
-    const m = String(d.getMonth() + 1).padStart(2, "0");
-    const day = String(d.getDate()).padStart(2, "0");
-    return `${y}-${m}-${day}`;
-  };
-
-  // 日付が変更したら 明日やる を 今日やる に移動
-  const rolloverTodosIfNewDay = (todos: Todo[], now = new Date()) => {
-    const todayKey = getDayKey(now);
-    const lastKey = localStorage.getItem(DAY_KEY_STORAGE);
-
-    // 初回 or 同一日なら何もしない
-    if (!lastKey || lastKey === todayKey) {
-      localStorage.setItem(DAY_KEY_STORAGE, todayKey);
-      return todos;
-    }
-
-    // 今日やるの件数を数える
-    const todayCount = todos.filter(
-      (todo) => todo.deadline === "today" && !todo.removed,
-    ).length;
-
-    // 日付が変わった：tomorrow -> today
-    const next: Todo[] = todos.map((todo) => {
-      if (todo.deadline === "tomorrow" && todayCount < 3) {
-        return { ...todo, deadline: "today" as Todo["deadline"] };
-      }
-      return todo;
-    });
-
-    localStorage.setItem(DAY_KEY_STORAGE, todayKey);
-    return next;
-  };
-
-  // 初回表示時にTodoを取得
+  // ロード
   useEffect(() => {
-    // async(関数が非同期処理を行うことを宣言)
-    const load = async () => {
-      try {
-        const data = (await fetchTodos()) as Todo[];
-        // 「明日やる → 今日やる」に変換
-        const rolled = rolloverTodosIfNewDay(data);
-        setTodos(rolled);
-      } catch (error) {
-        console.error(error);
-      }
+    let timer: number;
+
+    const dateUpdate = () => {
+      const diff = getRemainingTime();
+
+      // ロードが終わり次第、24時にカウントダウンを更新
+      timer = window.setTimeout(async () => {
+        await load();
+        dateUpdate();
+      }, diff);
+
+      return () => clearInterval(timer);
     };
     load();
-  }, []);
-
-  // アプリを開いてる間に「明日やる → 今日やる」に変換
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setTodos((prev) => rolloverTodosIfNewDay(prev));
-    }, 60 * 1000); // 1分ごとにチェック
-
-    return () => clearInterval(timer); // アンマウント時に止める
-  }, []);
+    dateUpdate();
+  }, [load]);
 
   return (
     <div className="app">
