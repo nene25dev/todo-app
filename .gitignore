@@ -23,5 +23,12 @@ dist-ssr
 *.sln
 *.sw?
 
+# env
+.env
+*.env
+
+# prisma
+/backend/src/generated/prisma
+
 README_DEV.md
 todo.txt
