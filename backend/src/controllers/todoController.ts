@@ -1,6 +1,5 @@
 // HTTPリクエストを受けて、レスポンスを返す
 import type { Request, Response } from "express";
-import { todoRepository } from "../repositories/todoRepository.js";
 import { todoService } from "../services/todoService.js";
 import { AppError } from "../errors/AppError.js";
 
