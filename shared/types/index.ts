@@ -1,5 +1,4 @@
-export type { Todo } from "./Todo";
-export type { Errors } from "./Errors";
-export type { EditErrors } from "./EditErrors";
-export type { Filter } from "./Filter";
-export type { Deadline } from "./Deadline";
+export * from "./Todo";
+export * from "./Errors";
+export * from "./Filter";
+export * from "./Deadline";

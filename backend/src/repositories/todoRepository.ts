@@ -1,12 +1,7 @@
 // DB処理(prisma)をここに書く
 import { prisma } from "../lib/prisma.js";
 import { Deadline, type Prisma } from "../generated/prisma/client.js";
-
-type ReorderTodoItem = {
-  id: number;
-  deadline: Deadline;
-  sortOrder: number;
-};
+import type { ReorderTodo } from "../../../shared/types/index.js";
 
 export const todoRepository = {
   // 一覧取得
@@ -102,7 +97,7 @@ findLastTodo(userId: number, deadline: Deadline) {
 },
 
 // 並び順保存
-reorderTodos(userId: number, items: ReorderTodoItem[]) {
+reorderTodos(userId: number, items: ReorderTodo[]) {
   return prisma.$transaction(
     items.map((item) =>
       prisma.todo.updateMany({

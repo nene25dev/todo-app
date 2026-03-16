@@ -4,12 +4,7 @@ import { prisma } from "../lib/prisma.js";
 import { Deadline, type Prisma, type Todo } from "../generated/prisma/client.js";
 import { todoRepository } from "../repositories/todoRepository.js";
 import { userRepository } from "../repositories/userRepository.js";
-
-type ReorderTodoItem = {
-  id: number;
-  deadline: Deadline;
-  sortOrder: number;
-};
+import type { ReorderTodo } from "../../../shared/types/index.js";
 
 function isDeadline(value: unknown): value is Deadline {
   return Object.values(Deadline).includes(value as Deadline);
@@ -193,7 +188,7 @@ async function deleteTodo(id:number) {
 }
 
 // 並び順
-function reorderTodos(userId: number, items: ReorderTodoItem[]) {
+function reorderTodos(userId: number, items: ReorderTodo[]) {
   return todoRepository.reorderTodos(userId, items);
 }
 

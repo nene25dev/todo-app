@@ -245,12 +245,13 @@ const App = () => {
     targetDeadline: Deadline,
     targetId?: number,
   ) => {
+    // 配列をコピー
     const next = [...todos];
   
-    // データの位置を取得
+    // ドラッグしてるタスクの位置を取得
     const from = next.findIndex((todo) => todo.id === dragId);
   
-    // 見つからなければ終了
+    // タスクが見つからなければ終了
     if (from === -1) return;
   
     // ドロップ先が「今日やる」の場合
@@ -261,13 +262,15 @@ const App = () => {
           todo.deadline === "today" && !todo.removed && todo.id !== dragId,
       ).length;
   
+      // すでに3件あるならやめる
       if (todayCount >= 3) {
         return;
       }
     }
   
-    // ドラッグ対象のデータを削除
+    // ドラッグしているタスクを元の位置から削除
     const [moved] = next.splice(from, 1);
+    // moved の deadline を移動先に書き換える
     const moved2 = { ...moved, deadline: targetDeadline };
   
     // 挿入先 index を決める
@@ -280,9 +283,9 @@ const App = () => {
     } else {
       // セクションにドラッグ
       const lastIndex = [...next]
-        .map((todo, id) => ({ todo, id }))
+        .map((todo, index) => ({ todo, index }))
         .filter(({ todo }) => todo.deadline === targetDeadline)
-        .pop()?.id;
+        .pop()?.index;
   
       to = lastIndex == null ? next.length : lastIndex + 1;
     }

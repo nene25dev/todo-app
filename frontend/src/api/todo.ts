@@ -1,4 +1,4 @@
-import type { Deadline, Todo } from "../../../shared/types/index.ts";
+import type { ReorderTodo, Todo } from "../../../shared/types/index.ts";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -77,14 +77,8 @@ export const deleteTodo = async (id: number): Promise<void> => {
   }
 };
 
-type ReorderTodoItem = {
-  id: number;
-  deadline: Deadline;
-  sortOrder: number;
-};
-
 // 並び順の更新
-export async function updateTodoOrder(payload:ReorderTodoItem[]) {
+export async function updateTodoOrder(payload:ReorderTodo[]) {
   const response = await fetch(`${API_URL}/todos/reorder`, {
     method: "PATCH",
     headers: {

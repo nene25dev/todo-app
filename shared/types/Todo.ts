@@ -6,5 +6,9 @@ export type Todo = {
   checked: boolean;
   removed: boolean;
   deadline: Deadline;
-  time: number | null;
+  time: number;
+  sortOrder: number;
+  userId: number;
 };
+
+export type ReorderTodo = Pick<Todo, "id" | "deadline" | "sortOrder">;
