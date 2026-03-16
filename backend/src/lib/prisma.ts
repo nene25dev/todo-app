@@ -12,6 +12,9 @@ if (!databaseUrl) {
 // Prisma用 postgresql 接続ドライバ
 const pool = new pg.Pool({
   connectionString: databaseUrl,
+  ssl: {
+    rejectUnauthorized: false,
+  },
 });
 
 const adapter = new PrismaPg(pool);
