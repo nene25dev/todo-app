@@ -4,10 +4,12 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "npm run reset && npm run seed && npm run dev",
     "dev": "tsx watch src/index.ts",
     "build": "tsc",
-    "start": "node dist/index.js"
+    "start": "node dist/index.js",
+    "reset": "prisma migrate reset --force",
+    "seed": "prisma db seed"
   },
   "keywords": [],
   "author": "",

@@ -2,9 +2,45 @@ import { prisma } from "../src/lib/prisma.js";
 import { Deadline } from "../src/generated/prisma/enums.js";
 import { fakerJA as faker } from "@faker-js/faker";
 
-function randomItem<T>(items: readonly T[]): T {
-  return items[Math.floor(Math.random() * items.length)]!;
+
+function shuffleItem<T>(array: T[]): T[] {
+  return [...array].sort(() => Math.random() - 0.5);
 }
+
+const taskTexts = [
+  "メールを返信する",
+  "部屋を片付ける",
+  "洗濯を回す",
+  "スーパーで買い物",
+  "資料を作成する",
+  "TODOアプリを修正する",
+  "GitHubにpushする",
+  "ブログ記事を書く",
+  "筋トレをする",
+  "散歩する",
+  "Reactの勉強",
+  "TypeScriptの型整理",
+  "ポートフォリオを更新",
+  "PRレビューする",
+  "デザインを調整する",
+  "バグ修正",
+];
+
+const shuffledTasks = shuffleItem(taskTexts);
+
+const deadlines: Deadline[] = [
+  Deadline.idea,
+  Deadline.idea,
+  Deadline.idea,
+  Deadline.today,
+  Deadline.today,
+  Deadline.tomorrow,
+  Deadline.tomorrow,
+  Deadline.tomorrow,
+  Deadline.tomorrow,
+];
+
+const shuffledDeadlines = shuffleItem(deadlines);
 
 async function main() {
   await prisma.todo.deleteMany();
@@ -19,19 +55,14 @@ async function main() {
     },
   });
 
-  const deadlines: Deadline[] = [
-    Deadline.idea,
-    Deadline.tomorrow,
-  ];
-
-  const todos = Array.from({ length: 10 }).map((_,i) => {
+  const todos = Array.from({ length: 10 }).map((_, i) => {
     return {
-      value: faker.lorem.words(3),
+      value: shuffledTasks[i],
       checked: faker.datatype.boolean(),
       removed: false,
-      deadline: randomItem(deadlines),
+      deadline: shuffledDeadlines[i],
       time: faker.number.int({ min: 5, max: 30 }),
-      sortOrder:i,
+      sortOrder: i,
       userId: user.id,
     };
   });
