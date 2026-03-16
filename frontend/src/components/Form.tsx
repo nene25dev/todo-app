@@ -41,15 +41,15 @@ export const Form = ({
                 <option value="today">今日やる</option>
                 <option value="tomorrow">明日やる</option>
             </select>
-            <div>
-                <input className="todo-input"
+            <div className="todo-input-wrapper">
+                <input className="todo-input todo-text"
                     type="text" value={text}
                     placeholder="タスクを入力してください"
                     onChange={(e) => onChangeText(e.target.value)}
                     onBlur={() => onBlur('text')} />
                 {errors.text && <p className='form-error'>{errors.text}</p>}
             </div>
-            <div>
+            <div className="todo-input-wrapper">
                 <input className="todo-input todo-time"
                     type="number"
                     placeholder="かかる時間"

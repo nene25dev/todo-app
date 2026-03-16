@@ -3,13 +3,17 @@
 .app {
   max-width: 960px;
   min-height: calc(100vh - 64px);
-  margin: 32px auto;
-  padding: 24px 24px 32px;
+  margin: 0 auto;
+  padding: 20px 15px;
   background: #ffffff;
-  border-radius: 16px;
-  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
   display: flex;
   flex-flow: column;
+  @media (min-width:calc(640em/16)){
+    padding: 24px 24px 32px;
+    margin: 30px auto;
+    border-radius: 16px;
+    box-shadow: 0 0 5px rgba(0,0,0, 0.1);
+  }
 }
 
 /* ヘッダー */
@@ -73,8 +77,17 @@
   border-radius: 8px;
 }
 
-.todo-input {
-  width: 15em;
+.todo-input-wrapper{
+  overflow: hidden;
+  &:has(.todo-text){
+    width: 100%;
+    @media (min-width:calc(768em/16)){
+      flex: 1;
+    }
+  }
+}
+.todo-text{
+  width: 100%;
 }
 
 .todo-input::placeholder {
@@ -163,14 +176,17 @@
   border-radius: 14px;
   padding: 12px 10px 10px;
   border: 1px solid #e5e7eb;
-  min-height: 120px;
+  min-height: 80px;
   display: flex;
   flex-direction: column;
   gap: 6px;
 }
 
 section.box {
-  padding: 12px 15px;
+  padding: 8px 10px;
+  @media (min-width:calc(640em/16)){
+    padding: 12px 15px;
+  }
 }
 
 .board h2 {
@@ -181,7 +197,10 @@ section.box {
 }
 
 .box h2 {
-  font-size: calc(20rem/16);
+  font-size: calc(16rem/16);
+  @media (min-width:calc(640em/16)){
+    font-size: calc(20rem/16);
+  }
 }
 
 .board .text {
@@ -207,19 +226,24 @@ section.box {
 }
 
 .todo-item {
-  display: grid;
-  grid-template-columns: auto 1fr auto auto;
+  display: flex;
+  flex-flow: wrap;
   gap: 6px;
   align-items: center;
-  padding: 1em;
+  padding: .5em;
   border-radius: 10px;
   background-color: #ffffff;
   border: 1px solid transparent;
   box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
   cursor: grab;
   transition: all 0.12s ease-in-out;
-}
+  font-size: calc(14rem/16);
 
+  @media (min-width:calc(640em/16)) {
+    font-size: calc(16rem/16);
+    padding: 1em;
+  }
+}
 .todo-item:active {
   cursor: grabbing;
   transform: scale(0.98);
@@ -237,8 +261,8 @@ section.box {
 input[type="checkbox"]+span {
   display: block;
   position: relative;
-  width: 24px;
-  height: 24px;
+  width: 22px;
+  height: 22px;
   appearance: none;
   background: #FFFFFF;
   border: solid 2px #808080;
@@ -247,6 +271,11 @@ input[type="checkbox"]+span {
   transition-duration: 0.2s;
   transition-property: background-color, border, box-shadow, color;
   cursor: pointer;
+
+  @media (min-width:calc(640em/16)){
+    width: 24px;
+    height: 24px;
+  }
 
   /* 強制カラーモードが有効のときは、既定のシステムカラー値を設定して、トランジションを無効にする */
   @media (forced-colors: active) {
@@ -346,13 +375,17 @@ input[type="checkbox"]:checked+span::before {
   background-color: #fecaca;
 }
 
+.todo-item__text{
+  flex: 1;
+}
+
 .todo-item__time {
-  margin-right: 20px;
+  margin-right: 5px;
 }
 
 .todo-item__time-row {
   display: flex;
-  width: 4em;
+  width: 3em;
   gap: .5em;
 }
 

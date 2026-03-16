@@ -102,3 +102,7 @@ footer {
     display: block !important;
     visibility: visible !important;
 }
+
+input[type="text"]{
+  text-overflow: ellipsis;
+}

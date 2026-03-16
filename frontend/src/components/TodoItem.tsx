@@ -70,7 +70,7 @@ export const TodoItem = ({ todo, setDraggingId, onChange, varidateForm, onDropOn
                 />
                 <span></span>
             </label>
-            <p>
+            <p className="todo-item__text">
                 <input
                     type="text"
                     disabled={todo.checked || todo.removed}

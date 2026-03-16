@@ -54,7 +54,7 @@ const TodayNote = () => {
   return (
     <>
       <p className="text">
-        明日まで残り： <>{Countdown()}</>
+        明日まで残り： <Countdown />
       </p>
       <p className="text">※3件まで</p>
     </>
