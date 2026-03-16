@@ -24,13 +24,14 @@ async function main() {
     Deadline.tomorrow,
   ];
 
-  const todos = Array.from({ length: 10 }).map(() => {
+  const todos = Array.from({ length: 10 }).map((_,i) => {
     return {
       value: faker.lorem.words(3),
       checked: faker.datatype.boolean(),
       removed: false,
       deadline: randomItem(deadlines),
       time: faker.number.int({ min: 5, max: 30 }),
+      sortOrder:i,
       userId: user.id,
     };
   });

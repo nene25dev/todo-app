@@ -1,9 +1,15 @@
 // アプリの処理・ルールをここに書く
 import { AppError } from "../errors/AppError.js";
 import { prisma } from "../lib/prisma.js";
-import { Deadline, type Prisma } from "../generated/prisma/client.js";
+import { Deadline, type Prisma, type Todo } from "../generated/prisma/client.js";
 import { todoRepository } from "../repositories/todoRepository.js";
 import { userRepository } from "../repositories/userRepository.js";
+
+type ReorderTodoItem = {
+  id: number;
+  deadline: Deadline;
+  sortOrder: number;
+};
 
 function isDeadline(value: unknown): value is Deadline {
   return Object.values(Deadline).includes(value as Deadline);
@@ -48,7 +54,7 @@ async function rolloverTodosIfNewDay(
     // 「今日やる」に空きがあれば
     if (movableCount > 0) {
       // 「明日やる」タスクを取得
-      const tomorrowTodos = await todoRepository.findMovableTomorrowTodos(userId,movableCount);
+      const tomorrowTodos:Todo[] = await todoRepository.findMovableTomorrowTodos(userId,movableCount);
 
       const ids = tomorrowTodos.map((todo) => todo.id);
 
@@ -88,10 +94,15 @@ async function createNewTodo(
     throw new AppError("かかる時間を入力してください",400);
   }
 
+  const lastTodo = await todoRepository.findLastTodo(userId,deadline);
+  // 並び順をセクション内の最後にする
+  const sortOrder = lastTodo ? lastTodo.sortOrder + 1 : 0;
+
   return await todoRepository.createTodo({
     value: value.trim(),
     deadline: deadline as Deadline,
     time,
+    sortOrder,
     user: {
       connect: { id: userId }
     }
@@ -181,10 +192,16 @@ async function deleteTodo(id:number) {
     await todoRepository.deleteTodo(id);
 }
 
+// 並び順
+function reorderTodos(userId: number, items: ReorderTodoItem[]) {
+  return todoRepository.reorderTodos(userId, items);
+}
+
 
 export const todoService = {
   getAllTodos,
   createNewTodo,
   updatedTodo,
-  deleteTodo
+  deleteTodo,
+  reorderTodos
 };

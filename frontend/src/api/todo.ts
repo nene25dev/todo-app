@@ -1,4 +1,4 @@
-import type { Todo } from "../../../shared/types/index.ts";
+import type { Deadline, Todo } from "../../../shared/types/index.ts";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -76,3 +76,27 @@ export const deleteTodo = async (id: number): Promise<void> => {
     throw new Error(errorData?.message || "Todo削除失敗");
   }
 };
+
+type ReorderTodoItem = {
+  id: number;
+  deadline: Deadline;
+  sortOrder: number;
+};
+
+// 並び順の更新
+export async function updateTodoOrder(payload:ReorderTodoItem[]) {
+  const response = await fetch(`${API_URL}/todos/reorder`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+  });
+
+  const text = await response.text();
+  console.log(response.status, text)
+
+  if (!response.ok) {
+    throw new Error("Todoの並び順保存に失敗しました");
+  }
+}

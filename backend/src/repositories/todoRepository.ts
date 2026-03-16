@@ -2,13 +2,19 @@
 import { prisma } from "../lib/prisma.js";
 import { Deadline, type Prisma } from "../generated/prisma/client.js";
 
+type ReorderTodoItem = {
+  id: number;
+  deadline: Deadline;
+  sortOrder: number;
+};
+
 export const todoRepository = {
   // 一覧取得
   findAllTodos(userId: number) {
     return prisma.todo.findMany({
       where: { userId },
       orderBy: {
-        id: "desc",
+        sortOrder: "asc",
       },
     });
   },
@@ -61,7 +67,9 @@ export const todoRepository = {
         deadline: Deadline.tomorrow,
         removed: false,
       },
-      orderBy: [{ id: "asc" }],
+      orderBy: {
+        sortOrder: "asc",
+      },
       take,
     });
   },
@@ -79,4 +87,37 @@ export const todoRepository = {
       data: { deadline },
     });
   },
+
+// 最後のタスクのみ取得
+findLastTodo(userId: number, deadline: Deadline) {
+  return prisma.todo.findFirst({
+    where: {
+      userId,
+      deadline
+    },
+    orderBy: {
+      sortOrder: "desc",
+    },
+  });
+},
+
+// 並び順保存
+reorderTodos(userId: number, items: ReorderTodoItem[]) {
+  return prisma.$transaction(
+    items.map((item) =>
+      prisma.todo.updateMany({
+        where: {
+          id: item.id,
+          userId,
+        },
+        data: {
+          deadline: item.deadline,
+          sortOrder: item.sortOrder,
+        },
+      })
+    )
+  );
+}
+
+
 };

@@ -3,7 +3,7 @@ import cors from "cors";
 import todoRoutes from "./routes/todoRoutes.js";
 
 const app = express();
-const PORT = Number(process.env.PORT) || 3000;
+const PORT = Number(process.env.PORT) || 3001;
 
 app.use(cors());
 app.use(express.json());

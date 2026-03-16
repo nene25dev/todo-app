@@ -1,11 +1,12 @@
 // URLとcontrollerを結びつける
 import { Router } from "express";
-import { getTodos, patchTodo, postTodos, removeTodo } from "../controllers/todoController.js";
+import { getTodos, patchTodo, postTodos, removeTodo,reorderTodos } from "../controllers/todoController.js";
 
 const router = Router();
 
 router.get("/",getTodos);
 router.post("/",postTodos);
+router.patch("/reorder", reorderTodos);
 router.patch("/:id",patchTodo);
 router.delete("/:id",removeTodo);
 

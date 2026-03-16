@@ -23,6 +23,7 @@ model Todo {
   removed  Boolean @default(false)
   deadline Deadline @default(idea)
   time     Int
+  sortOrder Int
   userId    Int
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())

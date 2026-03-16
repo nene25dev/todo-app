@@ -9,9 +9,9 @@ import type {
   Deadline,
 } from "../../shared/types/";
 import type {
-    Section
+  Section
 } from "../types/index";
-import { fetchTodos, createTodo, updateTodo, deleteTodo } from "./api/todo";
+import { fetchTodos, createTodo, updateTodo, deleteTodo,updateTodoOrder } from "./api/todo";
 
 // 残り時間取得
 function getRemainingTime() {
@@ -240,58 +240,76 @@ const App = () => {
   };
 
   // todoをドラッグで並び替える
-  const handleDropOnItem = (
+  const handleDropOnItem = async (
     dragId: number,
     targetDeadline: Deadline,
     targetId?: number,
   ) => {
-    setTodos((prev) => {
-      const next = [...prev];
-
-      // データの位置を取得
-      const from = next.findIndex((todo) => todo.id === dragId);
-
-      // 見つからなければ元のデータを返す
-      if (from === -1) return prev;
-
-      // ドロップ先が「今日やる」の場合
-      // 上限チェック
-      if (targetDeadline === "today") {
-        const todayCount = prev.filter(
-          (todo) =>
-            todo.deadline === "today" && !todo.removed && todo.id !== dragId, // ドラッグ中のデータは除外
-        ).length;
-        if (todayCount >= 3) {
-          return prev;
-        }
+    const next = [...todos];
+  
+    // データの位置を取得
+    const from = next.findIndex((todo) => todo.id === dragId);
+  
+    // 見つからなければ終了
+    if (from === -1) return;
+  
+    // ドロップ先が「今日やる」の場合
+    // 上限チェック
+    if (targetDeadline === "today") {
+      const todayCount = todos.filter(
+        (todo) =>
+          todo.deadline === "today" && !todo.removed && todo.id !== dragId,
+      ).length;
+  
+      if (todayCount >= 3) {
+        return;
       }
-
-      // ドラッグ対象のデータを削除
-      const [moved] = next.splice(from, 1);
-      const moved2 = { ...moved, deadline: targetDeadline };
-
-      // 挿入先 index を決める
-      let to: number;
-
-      if (targetId != null) {
-        // todoデータにドラッグ
-        to = next.findIndex((todo) => todo.id === targetId);
-        if (to === -1) return prev;
-      } else {
-        // セクションにドラッグ
-        const lastIndex = [...next]
-          .map((todo, id) => ({ todo, id }))
-          .filter(({ todo }) => todo.deadline === targetDeadline)
-          .pop()?.id;
-
-        to = lastIndex == null ? next.length : lastIndex + 1;
-      }
-
-      // ドラッグ対象のデータをドラッグが重なっている対象の位置に挿入
-      next.splice(to, 0, moved2);
-
-      return next;
-    });
+    }
+  
+    // ドラッグ対象のデータを削除
+    const [moved] = next.splice(from, 1);
+    const moved2 = { ...moved, deadline: targetDeadline };
+  
+    // 挿入先 index を決める
+    let to: number;
+  
+    if (targetId != null) {
+      // todoデータにドラッグ
+      to = next.findIndex((todo) => todo.id === targetId);
+      if (to === -1) return;
+    } else {
+      // セクションにドラッグ
+      const lastIndex = [...next]
+        .map((todo, id) => ({ todo, id }))
+        .filter(({ todo }) => todo.deadline === targetDeadline)
+        .pop()?.id;
+  
+      to = lastIndex == null ? next.length : lastIndex + 1;
+    }
+  
+    // ドラッグ対象のデータを挿入
+    next.splice(to, 0, moved2);
+  
+    // 先に画面を更新
+    setTodos(next);
+  
+    // API保存用のpayloadを作成
+    const payload = ["idea", "today", "tomorrow"].flatMap((deadline) =>
+      next
+        .filter((todo) => todo.deadline === deadline)
+        .map((todo, index) => ({
+          id: todo.id,
+          deadline: todo.deadline,
+          sortOrder: index,
+        }))
+    );
+  
+    // APIで保存
+    try {
+      await updateTodoOrder(payload);
+    } catch (error) {
+      console.error("並び順の保存に失敗しました", error);
+    }
   };
 
   // async(関数が非同期処理を行うことを宣言)

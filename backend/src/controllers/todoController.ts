@@ -2,9 +2,17 @@
 import type { Request, Response } from "express";
 import { todoService } from "../services/todoService.js";
 import { AppError } from "../errors/AppError.js";
+import type { Deadline } from "../generated/prisma/enums.js";
 
 // TODO:仮固定、認証導入時に差し替え
 const userId = 1;
+
+type ReorderTodoItem = {
+  id: number;
+  deadline: Deadline;
+  sortOrder: number;
+};
+
 
 // get
 export const getTodos = async (_req: Request, res: Response) => {
@@ -70,5 +78,23 @@ export const removeTodo = async (req: Request, res: Response) => {
       return res.status(error.statusCode).json({ message: error.message });
     }
     res.status(500).json({ message: "Todo削除に失敗しました" });
+  }
+};
+
+
+export const reorderTodos = async (req: Request, res: Response) => {
+  try {
+    const items = req.body as ReorderTodoItem[];
+
+    if (!Array.isArray(items)) {
+      return res.status(400).json({ message: "不正なデータです" });
+    }
+
+    await todoService.reorderTodos(userId, items);
+
+    return res.status(204).send();
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Todoの並び順保存に失敗しました" });
   }
 };
