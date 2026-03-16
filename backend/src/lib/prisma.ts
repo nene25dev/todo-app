@@ -1,16 +1,19 @@
 import "dotenv/config";
-import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
 import { PrismaClient } from "../generated/prisma/client.js";
+import { PrismaPg } from "@prisma/adapter-pg";
+import pg from "pg";
 
-const databaseUrl = process.env.DATABASE_URL;
+const databaseUrl = process.env.DATABASE_URL!;
 
 if (!databaseUrl) {
   throw new Error("DATABASE_URL is not set");
 }
 
-// Prisma用 SQLite 接続ドライバ
-const adapter = new PrismaBetterSqlite3({
-  url: databaseUrl,
+// Prisma用 postgresql 接続ドライバ
+const pool = new pg.Pool({
+  connectionString: databaseUrl,
 });
+
+const adapter = new PrismaPg(pool);
 
 export const prisma = new PrismaClient({ adapter });
