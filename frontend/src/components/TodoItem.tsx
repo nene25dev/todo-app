@@ -74,7 +74,6 @@ export const TodoItem = ({ todo, setDraggingId, onChange, varidateForm, onDropOn
                 <input
                     type="text"
                     disabled={todo.checked || todo.removed}
-                    placeholder="タスクを入力してください"
                     value={editText}
                     onChange={(e) => seteditText(e.target.value)}
                     onBlur={() => handleEditBlur('text')}
@@ -90,7 +89,6 @@ export const TodoItem = ({ todo, setDraggingId, onChange, varidateForm, onDropOn
                         type="number"
                         disabled={todo.checked || todo.removed}
                         value={editTime ?? ""}
-                        placeholder="かかる時間"
                         onChange={(e) => seteditTime(e.target.value)}
                         onBlur={() => handleEditBlur('time')}
                     />

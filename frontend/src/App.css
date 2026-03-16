@@ -385,7 +385,7 @@ input[type="checkbox"]:checked+span::before {
 
 .todo-item__time-row {
   display: flex;
-  width: 3em;
+  width: 4em;
   gap: .5em;
 }
 
