@@ -7,7 +7,7 @@
     "test": "npm run reset && npm run seed && npm run dev",
     "dev": "tsx watch src/index.ts",
     "build": "tsc",
-    "start": "node dist/index.js",
+    "start": "node dist/backend/src/index.js",
     "reset": "prisma migrate reset --force",
     "seed": "prisma db seed"
   },
