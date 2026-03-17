@@ -52,7 +52,7 @@ Backend
 Node.js + Express (REST API)
 ↓
 Database
-SQLite (Prisma ORM)
+PostgreSQL (Render)
 ```
 
 ---
@@ -69,8 +69,14 @@ SQLite (Prisma ORM)
 
 * Node.js
 * Express
-* Prisma ORM
-* SQLite
+* Prisma
+
+### Database
+* PostgreSQL (Render)
+
+### Deployment
+* Vercel (Frontend)
+* Render (Backend + DB)
 
 ---
 
@@ -81,7 +87,7 @@ SQLite (Prisma ORM)
   UIの処理とサーバー側のデータ処理を分離することで、役割を明確にし、保守しやすい構成にしています。
 
 - **データの永続化**  
-  Prisma ORM と SQLite を使用してタスクデータをデータベースに保存しています。  
+  PostgreSQL と Prisma ORM を使用してタスクデータをデータベースに保存しています。
   これにより、ページを再読み込みしてもタスクの状態が保持されます。
 
 - **ドラッグ＆ドロップとデータ更新の連携**  
