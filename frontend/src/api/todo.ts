@@ -2,6 +2,8 @@ import type { ReorderTodo, Todo } from "../../../shared/types/index.ts";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
+console.log("API_URL:", import.meta.env.VITE_API_URL);
+
 // 読み込み
 // fetch 非同期処理 APIを呼ぶ
 export const fetchTodos = async (): Promise<Todo[]> => {
