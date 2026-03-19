@@ -328,7 +328,6 @@ const App = () => {
   // ロード
   useEffect(() => {
     let timer: number;
-    console.log("API_URL:", import.meta.env.VITE_API_URL);
 
     const dateUpdate = () => {
       const diff = getRemainingTime();
