@@ -11,7 +11,7 @@ import type {
 import type {
   Section
 } from "../types/index";
-import { fetchTodos, createTodo, updateTodo, deleteTodo,updateTodoOrder } from "./api/todo";
+import { fetchTodos, createTodo, updateTodo, deleteTodo, updateTodoOrder } from "./api/todo";
 
 // 残り時間取得
 function getRemainingTime() {
@@ -81,6 +81,7 @@ const App = () => {
   const [deadline, setDeadline] = useState<Deadline>("idea");
   const [errors, setErrors] = useState<Errors>({});
   const [draggingId, setDraggingId] = useState<number | null>(null);
+  const [loading, setLoading] = useState(true);
 
   // バリデーション関数
   const varidateText = (text: string) => {
@@ -247,13 +248,13 @@ const App = () => {
   ) => {
     // 配列をコピー
     const next = [...todos];
-  
+
     // ドラッグしてるタスクの位置を取得
     const from = next.findIndex((todo) => todo.id === dragId);
-  
+
     // タスクが見つからなければ終了
     if (from === -1) return;
-  
+
     // ドロップ先が「今日やる」の場合
     // 上限チェック
     if (targetDeadline === "today") {
@@ -261,21 +262,21 @@ const App = () => {
         (todo) =>
           todo.deadline === "today" && !todo.removed && todo.id !== dragId,
       ).length;
-  
+
       // すでに3件あるならやめる
       if (todayCount >= 3) {
         return;
       }
     }
-  
+
     // ドラッグしているタスクを元の位置から削除
     const [moved] = next.splice(from, 1);
     // moved の deadline を移動先に書き換える
     const moved2 = { ...moved, deadline: targetDeadline };
-  
+
     // 挿入先 index を決める
     let to: number;
-  
+
     if (targetId != null) {
       // todoデータにドラッグ
       to = next.findIndex((todo) => todo.id === targetId);
@@ -286,16 +287,16 @@ const App = () => {
         .map((todo, index) => ({ todo, index }))
         .filter(({ todo }) => todo.deadline === targetDeadline)
         .pop()?.index;
-  
+
       to = lastIndex == null ? next.length : lastIndex + 1;
     }
-  
+
     // ドラッグ対象のデータを挿入
     next.splice(to, 0, moved2);
-  
+
     // 先に画面を更新
     setTodos(next);
-  
+
     // API保存用のpayloadを作成
     const payload = ["idea", "today", "tomorrow"].flatMap((deadline) =>
       next
@@ -306,7 +307,7 @@ const App = () => {
           sortOrder: index,
         }))
     );
-  
+
     // APIで保存
     try {
       await updateTodoOrder(payload);
@@ -322,6 +323,8 @@ const App = () => {
       setTodos(data);
     } catch (error) {
       console.error(error);
+    } finally {
+      setLoading(false);
     }
   }, []);
 
@@ -392,6 +395,13 @@ const App = () => {
       </div>
 
       <main className="board">
+        {loading && (
+          <p className="text-sm text-gray-500 mb-4">
+            タスクを読み込み中です…
+            <br />
+            初回アクセス時はサーバーの起動により、表示まで数秒かかる場合があります。
+          </p>
+        )}
         {sections.map((section) => (
           <TodoSection
             key={section.id}
