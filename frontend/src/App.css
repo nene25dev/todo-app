@@ -5,7 +5,7 @@
   min-height: calc(100vh - 64px);
   margin: 0 auto;
   padding: 20px 15px;
-  background: #ffffff;
+  background: #fff;
   display: flex;
   flex-flow: column;
   @media (min-width:calc(640em/16)){
@@ -55,7 +55,7 @@
 .deadline-select:focus,
 .todo-input:focus {
   border-color: #60a5fa;
-  background-color: #ffffff;
+  background-color: #fff;
   box-shadow: 0 0 0 2px rgba(96, 165, 250, 0.18);
 }
 
@@ -120,7 +120,7 @@
   font-weight: 600;
   cursor: pointer;
   background: linear-gradient(to right, #60a5fa, #34d399);
-  color: #ffffff;
+  color: #fff;
   white-space: nowrap;
   transition: transform 0.1s ease, box-shadow 0.1s ease, opacity 0.15s;
 }
@@ -232,7 +232,7 @@ section.box {
   align-items: center;
   padding: .5em;
   border-radius: 10px;
-  background-color: #ffffff;
+  background-color: #fff;
   border: 1px solid transparent;
   box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
   cursor: grab;
@@ -240,7 +240,7 @@ section.box {
   font-size: calc(14rem/16);
 
   @media (min-width:calc(640em/16)) {
-    font-size: calc(16rem/16);
+    font-size: 1rem;
     padding: 1em;
   }
 }
@@ -257,25 +257,29 @@ section.box {
 
 /* タスク内の要素 */
 
-/* アイコン */
-input[type="checkbox"]+span {
-  display: block;
-  position: relative;
+/* チェックボックス */
+.skeleton-checkbox ,input[type="checkbox"]+span{
   width: 22px;
   height: 22px;
-  appearance: none;
-  background: #FFFFFF;
-  border: solid 2px #808080;
   border-radius: 4px;
-  box-shadow: 0 0 0 0 transparent;
-  transition-duration: 0.2s;
-  transition-property: background-color, border, box-shadow, color;
-  cursor: pointer;
+  display: block;
+}
+input[type="checkbox"]+span{
+  background: #fff;
+  border: solid 2px #808080;
 
   @media (min-width:calc(640em/16)){
     width: 24px;
     height: 24px;
   }
+}
+input[type="checkbox"]+span {
+  position: relative;
+  appearance: none;
+  box-shadow: 0 0 0 0 transparent;
+  transition-duration: 0.2s;
+  transition-property: background-color, border, box-shadow, color;
+  cursor: pointer;
 
   /* 強制カラーモードが有効のときは、既定のシステムカラー値を設定して、トランジションを無効にする */
   @media (forced-colors: active) {
@@ -295,7 +299,7 @@ input[type="checkbox"]+span {
     mask-image: url("./assets/img/icon.svg");
     mask-repeat: no-repeat;
     mask-size: contain;
-    background-color: #FFFFFF;
+    background-color: #fff;
     transition: opacity 0.2s;
 
     /* Safari対策 */
@@ -313,8 +317,6 @@ input[type="checkbox"]+span {
     }
   }
 }
-
-
 
 /* アイコン：選択済みの見た目 */
 input[type="checkbox"]:checked+span {
@@ -345,9 +347,15 @@ input[type="checkbox"]:checked+span::before {
   opacity: 1;
 }
 
-.todo-item input[type="text"] {
+/* テキスト */
+.todo-item__text{
+  flex: 1;
+}
+.todo-item input[type="text"] ,.skeleton-text{
   width: 100%;
   padding: 4px 6px;
+}
+.todo-item input[type="text"] {
   border: none;
   border-radius: 6px;
   outline: none;
@@ -359,7 +367,8 @@ input[type="checkbox"]:checked+span::before {
   background-color: #eff6ff;
 }
 
-.todo-item button {
+/* ボタン */
+.todo-item button,.skeleton-button {
   border: none;
   font-size: calc(11rem/16);
   padding: .5em 1em;
@@ -375,14 +384,10 @@ input[type="checkbox"]:checked+span::before {
   background-color: #fecaca;
 }
 
-.todo-item__text{
-  flex: 1;
-}
-
+/* 時間 */
 .todo-item__time {
   margin-right: 5px;
 }
-
 .todo-item__time-row {
   display: flex;
   width: 4em;
@@ -410,4 +415,43 @@ input[type="checkbox"]:checked+span::before {
 button[onClick="handleEmpty"],
 .empty-button {
   margin-bottom: 8px;
+}
+
+/* スケルトン */
+.todo-item.--skeleton{
+  pointer-events: none;
+}
+
+/* スケルトン：チェックボックス */
+.skeleton-checkbox {
+background: #eee;
+}
+/* スケルトン：テキスト */
+.skeleton-text{
+  display: block;
+  height: calc(1.5em + 8px);
+  background-color: #eee;
+  border-radius: 4px;
+}
+/* スケルトン：時間 */
+.skeleton-time {
+  display: inline-block;
+  width: 4em;
+  height: calc(1.5em + 8px);
+  background-color: #eee;
+  border-radius: 4px;
+}
+/* スケルトン：ボタン */
+.skeleton-button {
+  width: 50px;
+  height: 24px;
+  border: none;
+  background-color: #eee!important;
+}
+/* スケルトン：カウントダウン */
+.skeleton-countdown{
+  display: block;
+  height: calc(1em + 8px);
+  background-color: #eee;
+  width: 14em;
 }

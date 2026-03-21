@@ -50,28 +50,16 @@ function Countdown() {
   return countdown;
 }
 
-const TodayNote = () => {
+const TodayNote = ({ loading }: { loading: boolean }) => {
   return (
     <>
       <p className="text">
-        明日まで残り： <Countdown />
+        {loading ? <span className="skeleton-countdown"></span> : <>明日まで残り： <Countdown /></>}
       </p>
       <p className="text">※3件まで</p>
     </>
   );
 };
-
-// デフォルトのsection
-const DEFAULT_SECTIONS: Section[] = [
-  { id: "idea", deadline: "idea", title: "思いつき" },
-  {
-    id: "today",
-    deadline: "today",
-    title: "今日やる",
-    note: <TodayNote />,
-  },
-  { id: "tomorrow", deadline: "tomorrow", title: "明日やる" },
-];
 
 const App = () => {
   const [text, setText] = useState("");
@@ -220,6 +208,18 @@ const App = () => {
     return todos.filter((todo) => todo.deadline === deadline && !todo.removed);
   };
 
+  // デフォルトのsection
+  const DEFAULT_SECTIONS: Section[] = [
+    { id: "idea", deadline: "idea", title: "思いつき" },
+    {
+      id: "today",
+      deadline: "today",
+      title: "今日やる",
+      note: <TodayNote loading={loading} />,
+    },
+    { id: "tomorrow", deadline: "tomorrow", title: "明日やる" },
+  ];
+
   const SECTIONS_BY_FILTER: Partial<Record<Filter, Section[]>> = {
     removed: [{ id: "removed", title: "ごみ箱", icon: "fa-solid fa-trash" }],
     checked: [
@@ -318,13 +318,19 @@ const App = () => {
 
   // async(関数が非同期処理を行うことを宣言)
   const load = useCallback(async () => {
+    const start = Date.now();
     try {
       const data = (await fetchTodos()) as Todo[];
       setTodos(data);
     } catch (error) {
       console.error(error);
     } finally {
-      setLoading(false);
+      const elapsed = Date.now() - start;
+      const delay = Math.max(300 - elapsed, 0);
+
+      setTimeout(() => {
+        setLoading(false);
+      }, delay);
     }
   }, []);
 
@@ -395,13 +401,6 @@ const App = () => {
       </div>
 
       <main className="board">
-        {loading && (
-          <p className="text-sm text-gray-500 mb-4">
-            タスクを読み込み中です…
-            <br />
-            初回アクセス時はサーバーの起動により、表示まで数秒かかる場合があります。
-          </p>
-        )}
         {sections.map((section) => (
           <TodoSection
             key={section.id}
@@ -412,6 +411,7 @@ const App = () => {
             onChange={handleTodo}
             varidateForm={varidateForm}
             onDropItem={handleDropOnItem}
+            loading={loading}
           />
         ))}
       </main>

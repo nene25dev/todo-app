@@ -7,8 +7,10 @@ import type {
 import type {
     Section
 } from "../../types/index";
+import { TodoSkeleton } from "./TodoSkeleton";
 
 type Props = {
+    loading: boolean;
     section: Section;
     draggingId: number | null;
     setDraggingId: React.Dispatch<React.SetStateAction<number | null>>;
@@ -18,18 +20,23 @@ type Props = {
     onDropItem: (dragId: number, targetDeadline: Deadline, targetId?: number,) => void;
 };
 
-export const TodoSection = ({ section, draggingId, setDraggingId, filteredSections, onChange, varidateForm, onDropItem }: Props) => {
-
+export const TodoSection = ({ loading, section, draggingId, setDraggingId, filteredSections, onChange, varidateForm, onDropItem }: Props) => {
     return (
-        <section className='box' onDragOver={(e) => e.preventDefault()} onDrop={() => {
-            if (draggingId == null) return;
-            if (!section.deadline) return;
-            onDropItem(draggingId, section.deadline);
-            setDraggingId(null);
-        }}>
+        <section className='box'
+            onDragOver={!loading ? (e) => e.preventDefault() : undefined}
+            onDrop={!loading ? () => {
+                if (draggingId == null) return;
+                if (!section.deadline) return;
+                onDropItem(draggingId, section.deadline);
+                setDraggingId(null);
+            }
+                : undefined
+            }
+        >
             <h2>{section.title}{section.icon && <i className={`${section.icon}`}></i>}</h2>
             {section.note}
-            <ul>{filteredSections(section).map((todo) => (
+
+            {!loading ? <ul>{filteredSections(section).map((todo) => (
                 <TodoItem
                     key={todo.id}
                     todo={todo}
@@ -43,6 +50,9 @@ export const TodoSection = ({ section, draggingId, setDraggingId, filteredSectio
                     }}
                 />
             ))}</ul>
-        </section>
+            : <TodoSkeleton/>
+        }
+            
+        </section >
     );
 }
