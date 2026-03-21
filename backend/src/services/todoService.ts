@@ -19,7 +19,7 @@ function getDayKey(date = new Date()): string {
 }
 
 // 日付が変わったら「明日やる」を「今日やる」に最大3件移動
-async function rolloverTodosIfNewDay(
+async function rolloverTodos(
   userId: number,
   now = new Date(),
 ): Promise<void> {
@@ -65,8 +65,8 @@ async function rolloverTodosIfNewDay(
 }
 
 // 一覧
- async function getAllTodos(userId: number){
-  await rolloverTodosIfNewDay(userId);
+ async function getAllTodos(userId: number,now = new Date()){
+  await rolloverTodos(userId,now);
   return todoRepository.findAllTodos(userId);
 };
 
@@ -198,5 +198,6 @@ export const todoService = {
   createNewTodo,
   updatedTodo,
   deleteTodo,
-  reorderTodos
+  reorderTodos,
+  rolloverTodos
 };

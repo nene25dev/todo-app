@@ -4,12 +4,15 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "npm run reset && npm run seed && npm run dev",
+    "test": "cross-env NODE_ENV=test dotenv -e .env.test -- tsx --test test/**/*.test.ts",
     "dev": "tsx watch src/index.ts",
     "build": "tsc",
     "start": "node dist/backend/src/index.js",
     "reset": "prisma migrate reset --force",
-    "seed": "prisma db seed"
+    "seed": "prisma db seed",
+    "seed:dev": "tsx prisma/seed.dev.ts",
+    "seed:test": "dotenv -e .env.test -- tsx prisma/seed.dev.ts",
+    "seed:prod": "dotenv -e .env.production -- tsx prisma/seed.prod.ts"
   },
   "keywords": [],
   "author": "",
@@ -28,6 +31,8 @@
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
     "@types/node": "^25.5.0",
+    "cross-env": "^10.1.0",
+    "dotenv-cli": "^11.0.0",
     "ts-node": "^10.9.2",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3"
