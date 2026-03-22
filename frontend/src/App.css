@@ -8,11 +8,12 @@
   background: #fff;
   display: flex;
   flex-flow: column;
-  @media (min-width:calc(640em/16)){
+
+  @media (min-width:calc(640em/16)) {
     padding: 24px 24px 32px;
     margin: 30px auto;
     border-radius: 16px;
-    box-shadow: 0 0 5px rgba(0,0,0, 0.1);
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
   }
 }
 
@@ -77,16 +78,19 @@
   border-radius: 8px;
 }
 
-.todo-input-wrapper{
+.todo-input-wrapper {
   overflow: hidden;
-  &:has(.todo-text){
+
+  &:has(.todo-text) {
     width: 100%;
-    @media (min-width:calc(768em/16)){
+
+    @media (min-width:calc(768em/16)) {
       flex: 1;
     }
   }
 }
-.todo-text{
+
+.todo-text {
   width: 100%;
 }
 
@@ -184,8 +188,20 @@
 
 section.box {
   padding: 8px 10px;
-  @media (min-width:calc(640em/16)){
+
+  @media (min-width:calc(640em/16)) {
     padding: 12px 15px;
+  }
+}
+
+.box__content {
+  margin-bottom: 4px;
+
+  .row {
+    display: flex;
+    flex-flow: wrap;
+    gap: 4px 20px;
+    margin-bottom: 4px;
   }
 }
 
@@ -198,15 +214,19 @@ section.box {
 
 .box h2 {
   font-size: calc(16rem/16);
-  @media (min-width:calc(640em/16)){
+
+  @media (min-width:calc(640em/16)) {
     font-size: calc(20rem/16);
   }
 }
 
 .board .text {
-  margin: 0 4px 4px;
   font-size: calc(12rem/16);
   color: #9ca3af;
+
+  &.--message {
+    color: #dd2b28;
+  }
 }
 
 /* タスク一覧 */
@@ -244,6 +264,7 @@ section.box {
     padding: 1em;
   }
 }
+
 .todo-item:active {
   cursor: grabbing;
   transform: scale(0.98);
@@ -258,21 +279,24 @@ section.box {
 /* タスク内の要素 */
 
 /* チェックボックス */
-.skeleton-checkbox ,input[type="checkbox"]+span{
+.skeleton-checkbox,
+input[type="checkbox"]+span {
   width: 22px;
   height: 22px;
   border-radius: 4px;
   display: block;
 }
-input[type="checkbox"]+span{
+
+input[type="checkbox"]+span {
   background: #fff;
   border: solid 2px #808080;
 
-  @media (min-width:calc(640em/16)){
+  @media (min-width:calc(640em/16)) {
     width: 24px;
     height: 24px;
   }
 }
+
 input[type="checkbox"]+span {
   position: relative;
   appearance: none;
@@ -348,13 +372,16 @@ input[type="checkbox"]:checked+span::before {
 }
 
 /* テキスト */
-.todo-item__text{
+.todo-item__text {
   flex: 1;
 }
-.todo-item input[type="text"] ,.skeleton-text{
+
+.todo-item input[type="text"],
+.skeleton-text {
   width: 100%;
   padding: 4px 6px;
 }
+
 .todo-item input[type="text"] {
   border: none;
   border-radius: 6px;
@@ -368,7 +395,8 @@ input[type="checkbox"]:checked+span::before {
 }
 
 /* ボタン */
-.todo-item button,.skeleton-button {
+.todo-item button,
+.skeleton-button {
   border: none;
   font-size: calc(11rem/16);
   padding: .5em 1em;
@@ -388,6 +416,7 @@ input[type="checkbox"]:checked+span::before {
 .todo-item__time {
   margin-right: 5px;
 }
+
 .todo-item__time-row {
   display: flex;
   width: 4em;
@@ -418,21 +447,23 @@ button[onClick="handleEmpty"],
 }
 
 /* スケルトン */
-.todo-item.--skeleton{
+.todo-item.--skeleton {
   pointer-events: none;
 }
 
 /* スケルトン：チェックボックス */
 .skeleton-checkbox {
-background: #eee;
+  background: #eee;
 }
+
 /* スケルトン：テキスト */
-.skeleton-text{
+.skeleton-text {
   display: block;
   height: calc(1.5em + 8px);
   background-color: #eee;
   border-radius: 4px;
 }
+
 /* スケルトン：時間 */
 .skeleton-time {
   display: inline-block;
@@ -441,15 +472,17 @@ background: #eee;
   background-color: #eee;
   border-radius: 4px;
 }
+
 /* スケルトン：ボタン */
 .skeleton-button {
   width: 50px;
   height: 24px;
   border: none;
-  background-color: #eee!important;
+  background-color: #eee !important;
 }
+
 /* スケルトン：カウントダウン */
-.skeleton-countdown{
+.skeleton-countdown {
   display: block;
   height: calc(1em + 8px);
   background-color: #eee;

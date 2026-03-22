@@ -50,14 +50,17 @@ function Countdown() {
   return countdown;
 }
 
-const TodayNote = ({ loading }: { loading: boolean }) => {
+const TodayNote = ({ loading,message }: { loading: boolean,message:string }) => {
   return (
-    <>
-      <p className="text">
-        {loading ? <span className="skeleton-countdown"></span> : <>明日まで残り： <Countdown /></>}
-      </p>
-      <p className="text">※3件まで</p>
-    </>
+    <div className="box__content">
+      <div className="row">
+        <p className="text">※上限3件</p>
+        <p className="text">
+          {loading ? <span className="skeleton-countdown"></span> : <>明日まで残り： <Countdown /></>}
+        </p>
+      </div>
+      {message && <p className="text --message">{message}</p>}
+    </div>
   );
 };
 
@@ -70,6 +73,7 @@ const App = () => {
   const [errors, setErrors] = useState<Errors>({});
   const [draggingId, setDraggingId] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
+  const [message, setMessage] = useState("");
 
   // バリデーション関数
   const varidateText = (text: string) => {
@@ -217,7 +221,7 @@ const App = () => {
       id: "today",
       deadline: "today",
       title: "今日やる",
-      note: <TodayNote loading={loading} />,
+      note: <TodayNote loading={loading} message={message}/>,
     },
     { id: "tomorrow", deadline: "tomorrow", title: "明日やる" },
   ];
@@ -267,9 +271,13 @@ const App = () => {
 
       // すでに3件あるならやめる
       if (todayCount >= 3) {
+        setMessage("今日は既にやることがいっぱいです！💦");
         return;
       }
     }
+
+    // メッセージを消す
+    setMessage("");
 
     // ドラッグしているタスクを元の位置から削除
     const [moved] = next.splice(from, 1);
@@ -346,10 +354,10 @@ const App = () => {
       // ロードが終わり次第、24時にカウントダウンを更新
       timer = window.setTimeout(async () => {
         try {
-        await load();
-      } finally {
-        dateUpdate();
-      }
+          await load();
+        } finally {
+          dateUpdate();
+        }
       }, diff);
     };
     load();
