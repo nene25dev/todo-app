@@ -29,12 +29,12 @@ const taskTexts = [
 const shuffledTasks = shuffleItem(taskTexts);
 
 const deadlines: Deadline[] = [
-  Deadline.idea,
-  Deadline.idea,
-  Deadline.idea,
-  Deadline.idea,
-  Deadline.today,
-  Deadline.today,
+  // Deadline.idea,
+  // Deadline.idea,
+  // Deadline.idea,
+  // Deadline.idea,
+  // Deadline.today,
+  // Deadline.today,
   Deadline.tomorrow,
   Deadline.tomorrow,
   Deadline.tomorrow,
@@ -58,7 +58,7 @@ async function main() {
 
   const counters: Partial<Record<Deadline, number>> = {};
 
-  const todos = Array.from({ length: 10 }).map((_, i) => {
+  const todos = Array.from({ length: 4 }).map((_, i) => {
     const deadline = shuffledDeadlines[i];
 
     if (!counters[deadline]) {

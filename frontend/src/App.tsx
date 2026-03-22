@@ -147,7 +147,7 @@ const App = () => {
         deadline,
         time: num,
       });
-      setTodos((todos) => [newTodo, ...todos]);
+      setTodos((todos) => [...todos, newTodo]);
       setText("");
     } catch (error) {
       // エラー発生時の処理
@@ -205,7 +205,9 @@ const App = () => {
   });
 
   const filteredDeadline = (deadline: Deadline) => {
-    return todos.filter((todo) => todo.deadline === deadline && !todo.removed);
+    return todos
+      .filter((todo) => todo.deadline === deadline && !todo.removed)
+      .sort((a, b) => a.sortOrder - b.sortOrder);
   };
 
   // デフォルトのsection
@@ -343,14 +345,17 @@ const App = () => {
 
       // ロードが終わり次第、24時にカウントダウンを更新
       timer = window.setTimeout(async () => {
+        try {
         await load();
+      } finally {
         dateUpdate();
+      }
       }, diff);
-
-      return () => clearInterval(timer);
     };
     load();
     dateUpdate();
+
+    return () => clearTimeout(timer);
   }, [load]);
 
   return (
