@@ -358,7 +358,7 @@ const App = () => {
         } finally {
           dateUpdate();
         }
-      }, diff);
+      }, 5000);
     };
     load();
     dateUpdate();

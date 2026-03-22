@@ -60,6 +60,7 @@ export const todoRepository = {
       where: {
         userId,
         deadline: Deadline.tomorrow,
+        checked: false,
         removed: false,
       },
       orderBy: {
