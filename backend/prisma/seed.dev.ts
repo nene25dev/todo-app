@@ -56,14 +56,24 @@ async function main() {
     },
   });
 
+  const counters: Partial<Record<Deadline, number>> = {};
+
   const todos = Array.from({ length: 10 }).map((_, i) => {
+    const deadline = shuffledDeadlines[i];
+
+    if (!counters[deadline]) {
+      counters[deadline] = 1;
+    } else {
+      counters[deadline]++;
+    }
+
     return {
       value: shuffledTasks[i],
       checked: faker.datatype.boolean(),
       removed: false,
-      deadline: shuffledDeadlines[i],
+      deadline: deadline,
       time: faker.number.int({ min: 5, max: 30 }),
-      sortOrder: i,
+      sortOrder: counters[deadline],
       userId: user.id,
     };
   });

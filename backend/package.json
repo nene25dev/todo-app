@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "cross-env NODE_ENV=test dotenv -e .env.test -- tsx --test test/**/*.test.ts",
+    "test": "cross-env NODE_ENV=test dotenv -e .env.test -- tsx --test --test-concurrency=1 test/**/*.test.ts",
     "dev": "tsx watch src/index.ts",
     "build": "tsc",
     "start": "node dist/backend/src/index.js",
@@ -12,7 +12,8 @@
     "seed": "prisma db seed",
     "seed:dev": "tsx prisma/seed.dev.ts",
     "seed:test": "dotenv -e .env.test -- tsx prisma/seed.dev.ts",
-    "seed:prod": "dotenv -e .env.production -- tsx prisma/seed.prod.ts"
+    "seed:prod": "dotenv -e .env.production -- tsx prisma/seed.prod.ts",
+    "db:push:test": "dotenv -e .env.test -- prisma db push"
   },
   "keywords": [],
   "author": "",
