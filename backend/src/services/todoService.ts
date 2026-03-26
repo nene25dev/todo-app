@@ -107,6 +107,7 @@ async function createNewTodo(
 // 更新
 async function updatedTodo(
   id: number,
+  userId: number,
   body: {
     value?: unknown;
     deadline?: unknown;
@@ -173,18 +174,18 @@ async function updatedTodo(
     data.removed = removed;
   }
 
-  return await todoRepository.updatedTodo(id, data);
+  return await todoRepository.updatedTodo(id,userId, data);
 };
 
 // 削除
-async function deleteTodo(id:number) {
+async function deleteTodo(id:number,userId: number) {
   const exists = await todoRepository.findTodoById(id);
 
     if (!exists) {
       throw new AppError("TODOが見つかりませんでした",400);
     }
 
-    await todoRepository.deleteTodo(id);
+    await todoRepository.deleteTodo(id,userId);
 }
 
 // 並び順

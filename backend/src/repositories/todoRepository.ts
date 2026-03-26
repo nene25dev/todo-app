@@ -22,17 +22,17 @@ export const todoRepository = {
   },
 
   // 更新
-  updatedTodo(id: number, data: Prisma.TodoUpdateInput) {
+  updatedTodo(id: number, userId: number, data: Prisma.TodoUpdateInput) {
     return prisma.todo.update({
-      where: { id },
+      where: { id, userId },
       data,
     });
   },
 
   // 削除
-  deleteTodo(id: number) {
+  deleteTodo(id: number, userId: number) {
     return prisma.todo.delete({
-      where: { id },
+      where: { id, userId },
     });
   },
 
@@ -84,36 +84,36 @@ export const todoRepository = {
     });
   },
 
-// 最後のタスクのみ取得
-findLastTodo(userId: number, deadline: Deadline) {
-  return prisma.todo.findFirst({
-    where: {
-      userId,
-      deadline
-    },
-    orderBy: {
-      sortOrder: "desc",
-    },
-  });
-},
+  // 最後のタスクのみ取得
+  findLastTodo(userId: number, deadline: Deadline) {
+    return prisma.todo.findFirst({
+      where: {
+        userId,
+        deadline
+      },
+      orderBy: {
+        sortOrder: "desc",
+      },
+    });
+  },
 
-// 並び順保存
-reorderTodos(userId: number, items: ReorderTodo[]) {
-  return prisma.$transaction(
-    items.map((item) =>
-      prisma.todo.updateMany({
-        where: {
-          id: item.id,
-          userId,
-        },
-        data: {
-          deadline: item.deadline,
-          sortOrder: item.sortOrder,
-        },
-      })
-    )
-  );
-}
+  // 並び順保存
+  reorderTodos(userId: number, items: ReorderTodo[]) {
+    return prisma.$transaction(
+      items.map((item) =>
+        prisma.todo.updateMany({
+          where: {
+            id: item.id,
+            userId,
+          },
+          data: {
+            deadline: item.deadline,
+            sortOrder: item.sortOrder,
+          },
+        })
+      )
+    );
+  }
 
 
 };

@@ -17,12 +17,12 @@ enum Deadline {
 }
 
 model Todo {
-  id       Int     @id @default(autoincrement())
-  value    String
-  checked  Boolean @default(false)
-  removed  Boolean @default(false)
-  deadline Deadline @default(idea)
-  time     Int
+  id        Int     @id @default(autoincrement())
+  value     String
+  checked   Boolean @default(false)
+  removed   Boolean @default(false)
+  deadline  Deadline @default(idea)
+  time      Int
   sortOrder Int
   userId    Int
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -32,6 +32,8 @@ model Todo {
 
 model User {
   id               Int      @id @default(autoincrement())
+  email            String   @unique
+  passwordHash     String
   name             String?
   lastRolloverDate String?
   todos            Todo[]

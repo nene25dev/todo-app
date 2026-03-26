@@ -6,7 +6,9 @@ const API_URL = import.meta.env.VITE_API_URL;
 // fetch 非同期処理 APIを呼ぶ
 export const fetchTodos = async (): Promise<Todo[]> => {
   // fetch 非同期処理 APIを呼ぶ
-  const res = await fetch(`${API_URL}/todos`);
+  const res = await fetch(`${API_URL}/todos`, {
+    credentials: "include",
+  });
 
   if (!res.ok) {
     const errorData = await res.json().catch(() => null);
@@ -30,6 +32,7 @@ export const createTodo = async (todo: {
     headers: {
       "Content-Type": "application/json",
     },
+    credentials: "include",
     // サーバーに送信する内容
     body: JSON.stringify(todo),
   });
@@ -54,6 +57,7 @@ export const updateTodo = async (
     headers: {
       "Content-Type": "application/json",
     },
+    credentials: "include",
     body: JSON.stringify(updates),
   });
 
@@ -69,6 +73,7 @@ export const updateTodo = async (
 export const deleteTodo = async (id: number): Promise<void> => {
   const res = await fetch(`${API_URL}/todos/${id}`, {
     method: "DELETE",
+    credentials: "include",
   });
 
   if (!res.ok) {
@@ -78,12 +83,13 @@ export const deleteTodo = async (id: number): Promise<void> => {
 };
 
 // 並び順の更新
-export async function updateTodoOrder(payload:ReorderTodo[]) {
+export async function updateTodoOrder(payload: ReorderTodo[]) {
   const response = await fetch(`${API_URL}/todos/reorder`, {
     method: "PATCH",
     headers: {
       "Content-Type": "application/json",
     },
+    credentials: "include",
     body: JSON.stringify(payload),
   });
 

@@ -47,12 +47,11 @@ async function main() {
   await prisma.todo.deleteMany();
   await prisma.user.deleteMany();
 
-  const user = await prisma.user.upsert({
-    where: { id: 1 },
-    update: {},
-    create: {
-      id: 1,
-      name: faker.person.firstName(),
+  const user = await prisma.user.create({
+    data: {
+      email: "test@example.com",
+      passwordHash: "あとで本物のhashにする",
+      name: "test user",
     },
   });
 

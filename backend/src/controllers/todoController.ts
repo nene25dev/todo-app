@@ -1,15 +1,18 @@
 // HTTPリクエストを受けて、レスポンスを返す
 import type { Request, Response } from "express";
+import type { AuthRequest } from "../middlewears/requireAuth.js";
 import { todoService } from "../services/todoService.js";
 import { AppError } from "../errors/AppError.js";
 import type { ReorderTodo } from "../../../shared/types/Todo.js";
 
-// TODO:仮固定、認証導入時に差し替え
-const userId = 1;
-
 // get
-export const getTodos = async (_req: Request, res: Response) => {
+export const getTodos = async (req: AuthRequest, res: Response) => {
   try {
+    const userId = req.user?.userId;
+    if (!userId) {
+      return res.status(401).json({ message: "認証が必要です" });
+    }
+
     const todos = await todoService.getAllTodos(userId);
     res.json(todos);
   } catch (error) {
@@ -22,9 +25,13 @@ export const getTodos = async (_req: Request, res: Response) => {
 };
 
 // post
-export const postTodos = async (req: Request, res: Response) => {
+export const postTodos = async (req: AuthRequest, res: Response) => {
   try {
-    const newTodo = await todoService.createNewTodo(userId,req.body);
+    const userId = req.user?.userId;
+    if (!userId) {
+      return res.status(401).json({ message: "認証が必要です" });
+    }
+    const newTodo = await todoService.createNewTodo(userId, req.body);
     res.status(201).json(newTodo);
   } catch (error) {
     console.error(error);
@@ -36,12 +43,16 @@ export const postTodos = async (req: Request, res: Response) => {
 };
 
 // patch
-export const patchTodo = async (req: Request, res: Response) => {
+export const patchTodo = async (req: AuthRequest, res: Response) => {
   try {
+    const userId = req.user?.userId;
+    if (!userId) {
+      return res.status(401).json({ message: "認証が必要です" });
+    }
     // urlからidを取り出す
     const id = Number(req.params.id);
     // 更新用データを元に、DBを更新
-    const todo = await todoService.updatedTodo(id, req.body);
+    const todo = await todoService.updatedTodo(id, userId, req.body);
     // 更新されたデータを返す
     res.json(todo);
   } catch (error) {
@@ -54,15 +65,19 @@ export const patchTodo = async (req: Request, res: Response) => {
 };
 
 // remove
-export const removeTodo = async (req: Request, res: Response) => {
+export const removeTodo = async (req: AuthRequest, res: Response) => {
   try {
+    const userId = req.user?.userId;
+    if (!userId) {
+      return res.status(401).json({ message: "認証が必要です" });
+    }
     const id = Number(req.params.id);
 
     if (Number.isNaN(id)) {
       return res.status(400).json({ message: "idが不正です" });
     }
 
-    await todoService.deleteTodo(id);
+    await todoService.deleteTodo(id, userId);
 
     res.status(204).send();
   } catch (error) {
@@ -75,8 +90,13 @@ export const removeTodo = async (req: Request, res: Response) => {
 };
 
 
-export const reorderTodos = async (req: Request, res: Response) => {
+export const reorderTodos = async (req: AuthRequest, res: Response) => {
   try {
+    const userId = req.user?.userId;
+    if (!userId) {
+      return res.status(401).json({ message: "認証が必要です" });
+    }
+
     const items = req.body as ReorderTodo[];
 
     if (!Array.isArray(items)) {
