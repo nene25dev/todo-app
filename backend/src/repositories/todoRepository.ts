@@ -3,6 +3,13 @@ import { prisma } from "../lib/prisma.js";
 import { Deadline, type Prisma } from "../generated/prisma/client.js";
 import type { ReorderTodo } from "../../../shared/types/index.js";
 
+type CreateTodoInput = {
+  value: string;
+  deadline: Deadline;
+  time: number;
+  sortOrder: number;
+};
+
 export const todoRepository = {
   // 一覧取得
   findAllTodos(userId: number) {
@@ -15,9 +22,14 @@ export const todoRepository = {
   },
 
   // 追加
-  createTodo(data: Prisma.TodoCreateInput) {
+  createTodo(userId: number, data: CreateTodoInput) {
     return prisma.todo.create({
-      data,
+      data: {
+        ...data,
+        user: {
+          connect: { id: userId },
+        },
+      },
     });
   },
 
@@ -37,9 +49,12 @@ export const todoRepository = {
   },
 
   // 特定のタスクを取得
-  findTodoById(id: number) {
+  findTodoById(id: number, userId: number) {
     return prisma.todo.findUnique({
-      where: { id },
+      where: {
+        userId,
+        id
+      },
     });
   },
 
@@ -71,13 +86,14 @@ export const todoRepository = {
   },
 
   // 指定したタスクの締め切りをまとめて変更
-  updateDeadlineMany(todoIds: number[], deadline: Deadline) {
+  updateDeadlineMany(userId: number, todoIds: number[], deadline: Deadline) {
     if (todoIds.length === 0) {
       return Promise.resolve({ count: 0 });
     }
 
     return prisma.todo.updateMany({
       where: {
+        userId,
         id: { in: todoIds },
       },
       data: { deadline },

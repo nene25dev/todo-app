@@ -1,7 +1,8 @@
 import type { Request, Response } from "express";
 import type { AuthRequest } from "../middlewears/requireAuth.js";
 import { authService } from "../services/authService.js";
-// 認証
+
+// 登録
 export async function register(req: Request, res: Response) {
     const { email, password, name } = req.body;
 

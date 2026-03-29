@@ -31,7 +31,7 @@ export const userRepository = {
   },
 
 
-  // メールアドレスの重チェック
+  // メールアドレスの重複チェック
   findByEmail(email: string) {
     return prisma.user.findUnique({
       where: { email },

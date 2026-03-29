@@ -6,7 +6,7 @@ import type {
 } from "../../../shared/types/";
 import type {
     Section
-} from "../../types/index";
+} from "../types/index";
 import { TodoSkeleton } from "./TodoSkeleton";
 
 type Props = {

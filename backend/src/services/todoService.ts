@@ -55,7 +55,7 @@ async function rolloverTodos(
 
       if (ids.length > 0) {
         // 取得したタスクを「今日やる」に移動
-        await todoRepository.updateDeadlineMany(ids,Deadline.today);
+        await todoRepository.updateDeadlineMany(userId,ids,Deadline.today);
       }
     }
 
@@ -93,14 +93,11 @@ async function createNewTodo(
   // 並び順をセクション内の最後にする
   const sortOrder = lastTodo ? lastTodo.sortOrder + 1 : 0;
 
-  return await todoRepository.createTodo({
+  return await todoRepository.createTodo(userId,{
     value: value.trim(),
     deadline: deadline as Deadline,
     time,
     sortOrder,
-    user: {
-      connect: { id: userId }
-    }
   });
 };
 
@@ -121,7 +118,7 @@ async function updatedTodo(
     throw new AppError("id が不正です", 400);
   }
   // DBに対象データが存在するか確認
-  const targetTodo = await todoRepository.findTodoById(id);
+  const targetTodo = await todoRepository.findTodoById(id,userId);
 
   if (!targetTodo) {
     throw new AppError("Todoが見つけられませんでした", 404);
@@ -179,7 +176,7 @@ async function updatedTodo(
 
 // 削除
 async function deleteTodo(id:number,userId: number) {
-  const exists = await todoRepository.findTodoById(id);
+  const exists = await todoRepository.findTodoById(id,userId);
 
     if (!exists) {
       throw new AppError("TODOが見つかりませんでした",400);

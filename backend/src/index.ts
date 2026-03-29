@@ -20,7 +20,7 @@ app.use(express.json());
 // リクエストに含まれる Cookie をサーバー側で読み取れるようにする
 app.use(cookieParser());
 
-app.use("/register", authRoutes);
+app.use("/auth", authRoutes);
 app.use("/todos", todoRoutes);
 
 app.listen(PORT, () => {
